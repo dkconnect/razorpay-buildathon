@@ -118,3 +118,20 @@ median amount: 1825.23
 mean amount: 2510.431872426254
 max amount: 50060.78
 ```
+
+---
+
+### 26 Aug - 5 PM
+#### Finallllyyy 
+#### Flash-sale scenario
+
+The legitimate flash-sale scenario exists, is labeled legitimate, is reproducible, and has a defined two-hour event window.
+
+*Quant Test*
+*Actual Ratio*
+
+```
+before: 914
+sale: 7305
+ratio: 7.99
+```    
