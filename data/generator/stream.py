@@ -20,14 +20,16 @@ def generate_stream(start_time, num_transactions, interval_seconds=10):
 
     return transactions
 
-
 def generate_poisson_stream(
     start_time,
     num_transactions,
     rate_per_minute,
     seed=None,
 ):
-#generating a stream of legitimate transaction using a poisson process
+
+#Generates legitimate transactions using Poisson arrivals and a lognormal amount distribution.
+
+    import numpy as np
 
     interarrival_times = generate_interarrival_times(
         num_transactions=num_transactions,
@@ -35,14 +37,24 @@ def generate_poisson_stream(
         seed=seed,
     )
 
+    rng = np.random.default_rng(seed)
+
     transactions = []
     current_time = start_time
 
     for interval in interarrival_times:
         current_time += timedelta(seconds=float(interval))
 
+        amount = rng.lognormal(
+            mean=7.5,
+            sigma=0.8,
+        )
+
         transactions.append(
-            generate_transaction(current_time)
+            generate_transaction(
+                current_time,
+                amount=round(float(amount), 2),
+            )
         )
 
     return transactions

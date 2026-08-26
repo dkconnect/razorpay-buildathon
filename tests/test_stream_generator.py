@@ -73,3 +73,22 @@ def test_poisson_stream_is_reproducible():
     second_times = [tx.timestamp for tx in second]
 
     assert first_times == second_times
+
+def test_poisson_stream_has_realistic_amounts():
+    start_time = datetime(2026, 1, 1, 12, 0, 0)
+
+    transactions = generate_poisson_stream(
+        start_time=start_time,
+        num_transactions=1000,
+        rate_per_minute=10,
+        seed=42,
+    )
+
+    amounts = [tx.amount for tx in transactions]
+
+    assert all(amount > 0 for amount in amounts)
+
+    # right-skewed distribution where the mean is above the median.
+    import numpy as np
+
+    assert np.mean(amounts) > np.median(amounts)
