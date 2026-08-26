@@ -37,3 +37,30 @@ this will give the inhomogeneous Poisson process required for the merchant basel
 *X ∼ LogNormal(mu,sigma)*
 
 mu = 7.5 | sigma = 0.8
+
+
+### 26 Aug - 12:50
+#### Define merchant traffic seasonality
+
+right now the arrival rate is constant:
+λ = 10 transactions/minute
+but real merchants wont behave like that.
+
+rough
+```
+Time        Relative traffic
+00–06       very low
+06–09       low
+09–12       medium
+12–16       high
+16–20       very high
+20–23       high
+23–00       medium
+```
+
+so I kinda need seasonality module
+
+Seasonality Module:
+
+*λ(t) = λ_base X M_hour(t) X M_day(t)*
+
