@@ -98,3 +98,10 @@ DAY 1 MID HOLDING
 1. Poisson arrivals --> Time-varying λ(t) --> Merchant stream
 2. Lognormal amounts --> Time-varying λ(t) --> Merchant stream  
       
+
+### Introducing scenario configuration
+
+creating
+- normal_day
+- flash_sale
+- fraud_ring
