@@ -23,3 +23,14 @@ current stream is obv not realistic.
 A merchant's transactions will be randomly around an underlying rate.
 
 modelling arrivals using a Poisson process.
+
+
+26 Aug - 11:30 
+
+night       → low λ
+morning     → medium λ
+afternoon   → high λ
+evening     → very high λ
+night       → low λ
+
+this will give the inhomogeneous Poisson process required for the merchant baseline.
