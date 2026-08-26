@@ -36,3 +36,28 @@ def get_day_multiplier(day_of_week):
     }
 
     return multipliers[day_of_week]
+
+def get_expected_rate(
+    timestamp,
+    base_rate_per_minute=10.0,
+):
+# expected transaction rate for a timestamp
+
+    if base_rate_per_minute <= 0:
+        raise ValueError(
+            "base_rate_per_minute should be positive"
+        )
+
+    hour_multiplier = get_rate_multiplier(
+        timestamp.hour
+    )
+
+    day_multiplier = get_day_multiplier(
+        timestamp.weekday()
+    )
+
+    return (
+        base_rate_per_minute
+        * hour_multiplier
+        * day_multiplier
+    )

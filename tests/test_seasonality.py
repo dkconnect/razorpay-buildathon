@@ -1,5 +1,6 @@
 from data.generator.seasonality import (
     get_day_multiplier,
+    get_expected_rate,
     get_rate_multiplier,
 )
 
@@ -53,4 +54,45 @@ def test_invalid_day():
     else:
         raise AssertionError(
             "Expected ValueError for invalid day"
+        )
+
+#------
+
+from datetime import datetime
+
+def test_expected_rate():
+    timestamp = datetime(2026, 1, 5, 18, 0, 0)
+
+    rate = get_expected_rate(
+        timestamp,
+        base_rate_per_minute=10,
+    )
+
+    assert rate == 15.0
+
+
+def test_expected_rate_weekend_effect():
+    timestamp = datetime(2026, 1, 10, 18, 0, 0)
+
+    rate = get_expected_rate(
+        timestamp,
+        base_rate_per_minute=10,
+    )
+
+    assert rate == 19.5
+
+
+def test_invalid_base_rate():
+    timestamp = datetime(2026, 1, 5, 12, 0, 0)
+
+    try:
+        get_expected_rate(
+            timestamp,
+            base_rate_per_minute=0,
+        )
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(
+            "Expected ValueError for invalid base rate"
         )
