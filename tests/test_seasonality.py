@@ -1,5 +1,7 @@
-from data.generator.seasonality import get_rate_multiplier
-
+from data.generator.seasonality import (
+    get_day_multiplier,
+    get_rate_multiplier,
+)
 
 def test_seasonality_returns_positive_rates():
     for hour in range(24):
@@ -29,3 +31,26 @@ def test_invalid_hour():
         pass
     else:
         raise AssertionError("Expected ValueError for invalid hour")
+    
+
+def test_day_multipliers_are_positive():
+    for day in range(7):
+        assert get_day_multiplier(day) > 0
+
+
+def test_weekend_is_busier_than_monday():
+    assert (
+        get_day_multiplier(5)
+        > get_day_multiplier(0)
+    )
+
+
+def test_invalid_day():
+    try:
+        get_day_multiplier(7)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(
+            "Expected ValueError for invalid day"
+        )

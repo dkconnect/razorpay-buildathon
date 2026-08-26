@@ -18,3 +18,21 @@ def get_rate_multiplier(hour):
         return 1.20
 
     return 0.70
+
+def get_day_multiplier(day_of_week):
+# will return the relative transaction-rate multiplier for a day.
+
+    if not 0 <= day_of_week <= 6:
+        raise ValueError("day_of_week must be between 0 and 6")
+
+    multipliers = {
+        0: 1.00,  # Monday
+        1: 1.00,  # Tuesday
+        2: 1.00,  # Wednesday
+        3: 1.00,  # Thursday
+        4: 1.10,  # Friday
+        5: 1.30,  # Saturday
+        6: 1.15,  # Sunday
+    }
+
+    return multipliers[day_of_week]

@@ -64,3 +64,20 @@ Seasonality Module:
 
 *λ(t) = λ_base X M_hour(t) X M_day(t)*
 
+### 26 Aug - 1:15
+#### day-of-week seasonality
+
+currently hourly behavior, gonna add a second dim. - day of week.
+
+assuming
+```
+Monday–Thursday: normal
+Friday: slightly busier
+Saturday: busy
+Sunday: moderately busy
+```
+Seasonality Module: *λ(t) = λ_base X M_hour(t) X M_day(t)*
+
+so, if base = 10 tx/min | hour = 18:00 → 1.5 | Saturday → 1.3
+
+then: 10 × 1.5 × 1.3 = 19.5
