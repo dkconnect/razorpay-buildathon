@@ -18,3 +18,4 @@ class ScenarioConfig:
             raise ValueError(
                 "base_rate_per_minute must be positive"
             )
+
