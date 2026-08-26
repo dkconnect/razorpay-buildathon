@@ -105,3 +105,16 @@ creating
 - normal_day
 - flash_sale
 - fraud_ring
+
+### 26 Aug - 4 PM
+#### Normal-day dataset
+
+*Scenario Result*
+```
+transactions: 11899
+first: 2026-01-05 00:00:57.701006
+last: 2026-01-05 23:59:58.743260
+median amount: 1825.23
+mean amount: 2510.431872426254
+max amount: 50060.78
+```
