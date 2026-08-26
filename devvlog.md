@@ -1,11 +1,6 @@
 ### 26 Aug Morning - 9 AM
 
-Transaction schema
-        ↓
-Single legitimate transaction generator
-        ↓
-2 passing tests
-
+Transaction schema --> Single legitimate transaction generator --> 2 passing tests
 
 ### 26 Aug Morning - 10 AM
 
@@ -13,15 +8,16 @@ Single legitimate transaction generator
 *Poisson transaction*
 ----------------------
 current stream is obv not realistic.
+```
 12:00:00
 12:00:10
 12:00:20
 12:00:30
+```
 
 A merchant's transactions will be randomly around an underlying rate.
 
 modelling arrivals using a Poisson process.
-
 
 ### 26 Aug - 11:30 AM
 
@@ -40,5 +36,4 @@ this will give the inhomogeneous Poisson process required for the merchant basel
 
 *X ∼ LogNormal(mu,sigma)*
 
-mu = 7.5
-sigma = 0.8
+mu = 7.5 | sigma = 0.8
