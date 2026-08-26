@@ -150,3 +150,24 @@ fraud: 0
 amount median normal: 1825.23
 amount median flash: 1816.09
 ```
+### 26 Aug - 10 PM
+
+### 27 Aug - 00:05
+Generate ring identities
+
+Each ring will have:
+
+ring
+── device fingerprints
+── IP subnet
+── card BINs
+
+Transaction A
+ ├─ device: fraud_device_ring_001_3
+ ├─ IP:     10.250.3.0/24
+ └─ BIN:    4000003
+
+Transaction B
+ ├─ device: fraud_device_ring_001_3
+ ├─ IP:     10.250.3.0/24
+ └─ BIN:    4000003
