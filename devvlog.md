@@ -31,7 +31,7 @@ night       → low λ
 
 this will give the inhomogeneous Poisson process required for the merchant baseline.
 
-### 26 Aug - 11: 45
+### 26 Aug - 11:45 AN
 #### Model transaction amounts
 
 *X ∼ LogNormal(mu,sigma)*
@@ -39,7 +39,7 @@ this will give the inhomogeneous Poisson process required for the merchant basel
 mu = 7.5 | sigma = 0.8
 
 
-### 26 Aug - 12:50
+### 26 Aug - 12:50 PM
 #### Define merchant traffic seasonality
 
 right now the arrival rate is constant:
@@ -64,7 +64,7 @@ Seasonality Module:
 
 *λ(t) = λ_base X M_hour(t) X M_day(t)*
 
-### 26 Aug - 1:15
+### 26 Aug - 1:15 PM
 #### day-of-week seasonality
 
 currently hourly behavior, gonna add a second dim. - day of week.
@@ -81,3 +81,20 @@ Seasonality Module: *λ(t) = λ_base X M_hour(t) X M_day(t)*
 so, if base = 10 tx/min | hour = 18:00 → 1.5 | Saturday → 1.3
 
 then: 10 × 1.5 × 1.3 = 19.5
+
+### 26 Aug - 2 PM
+#### Build the inhomogeneous arrival process
+
+timestamp --> expected λ(t)
+
+needed
+
+time --> expected rate λ(t) --> random arrival --> next timestamp --> recalculate λ(t)
+
+This will give a time-varying Poisson
+
+
+DAY 1 MID HOLDING 
+1. Poisson arrivals --> Time-varying λ(t) --> Merchant stream
+2. Lognormal amounts --> Time-varying λ(t) --> Merchant stream  
+      
