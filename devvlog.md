@@ -139,3 +139,14 @@ ratio: 7.99
 ### 26 Aug - 6 PM
 ### Last Sprint of Day
 *Saving scenarios as datasets*
+
+```
+NORMAL DAY
+transactions: 11899
+fraud: 0
+FLASH SALE
+transactions: 17904
+fraud: 0
+amount median normal: 1825.23
+amount median flash: 1816.09
+```
