@@ -261,7 +261,6 @@ legitimate: 11899
 fraud: 45
 testing: 33
 bust_out: 12
-<<<<<<< HEAD
 
 *current line*
 ```
@@ -299,6 +298,25 @@ bust_out: 12
 first: 2026-01-05 00:00:57.701006
 last: 2026-01-05 23:59:58.743260
 ```
-=======
+
+### 27 Aug (Day 3 Starting)
+#### Rolling Feature Window Engine
+
 ```
->>>>>>> ee3347fa62f980e173d37aac04b5e268049fd234
+to process an online stream of transaction events and maintain rolling statis over config time windows
+```
+
+The key signals:
+```
+velocity: tx count / t (minutes)
+
+```
+​```
+mean_amount & mean_log_amount: Tracks nominal vs. exponential deflection  
+```
+```
+low_val_ratio: Ratio of transactions where amount≤$50 (card testing signature)  
+```
+```
+high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)  
+```
