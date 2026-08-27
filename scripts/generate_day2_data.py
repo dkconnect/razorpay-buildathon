@@ -68,6 +68,5 @@ def main():
     print(f"seed:      {seed}")
     print(f"output:    {output_path}")
 
-
 if __name__ == "__main__":
     main()
