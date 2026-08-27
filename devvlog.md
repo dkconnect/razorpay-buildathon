@@ -152,7 +152,7 @@ amount median flash: 1816.09
 ```
 ### 26 Aug - 10 PM
 
-### 27 Aug - 00:05
+### 27 Aug - 00:05 AM
 Generate ring identities
 
 Each ring will have:
@@ -190,3 +190,50 @@ ring_id:        ring_001
 ```
 
 ```Phase 1 | ₹1–₹50 | many transactions``` --> ```Phase 2 | ₹5,000–₹50,000 | fewer transactions```
+
+
+### 27 Aug - 9 AM
+#### Combine Phase 1 + Phase 2
+
+creating one function that will:
+- Generate Phase 1.
+- Determine its actual end timestamp.
+- Apply the configured gap.
+- Generate Phase 2.
+- Combine them.
+- Sort everything chronologically.
+
+#### Random Fraud-Ring Configurations
+
+```
+small ring - 4 identities
+medium ring - 8 identities
+large ring - 14 identities
+
+short test - 5 min
+long test - 20 min
+
+small burst - 30 testing tx
+large burst - 150 testing tx
+
+short gap - 2 min
+long gap - 15 min
+```
+
+*Manual Check*
+
+```
+FraudRingConfig(ring_id='ring_000', identity_count=10, phase1_duration_minutes=18, phase1_transaction_count=35, phase2_gap_minutes=6, phase2_duration_minutes=13, phase2_transaction_count=20, phase1_min_amount=1.0, phase1_max_amount=50.0, phase2_min_amount=5000.0, phase2_max_amount=50000.0)
+```
+```
+FraudRingConfig(ring_id='ring_001', identity_count=6, phase1_duration_minutes=7, phase1_transaction_count=62, phase2_gap_minutes=3, phase2_duration_minutes=12, phase2_transaction_count=29, phase1_min_amount=1.0, phase1_max_amount=50.0, phase2_min_amount=5000.0, phase2_max_amount=50000.0)
+```
+```
+FraudRingConfig(ring_id='ring_002', identity_count=4, phase1_duration_minutes=7, phase1_transaction_count=40, phase2_gap_minutes=7, phase2_duration_minutes=7, phase2_transaction_count=28, phase1_min_amount=1.0, phase1_max_amount=50.0, phase2_min_amount=5000.0, phase2_max_amount=50000.0)
+```
+```
+FraudRingConfig(ring_id='ring_003', identity_count=7, phase1_duration_minutes=9, phase1_transaction_count=77, phase2_gap_minutes=11, phase2_duration_minutes=12, phase2_transaction_count=25, phase1_min_amount=1.0, phase1_max_amount=50.0, phase2_min_amount=5000.0, phase2_max_amount=50000.0)
+```
+```
+FraudRingConfig(ring_id='ring_004', identity_count=7, phase1_duration_minutes=14, phase1_transaction_count=43, phase2_gap_minutes=13, phase2_duration_minutes=11, phase2_transaction_count=20, phase1_min_amount=1.0, phase1_max_amount=50.0, phase2_min_amount=5000.0, phase2_max_amount=50000.0)
+```
