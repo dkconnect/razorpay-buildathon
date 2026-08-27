@@ -255,8 +255,10 @@ total: 867
 
 #### Mix Legitimacy and Fraud Traffic
 *check*
+```
 total: 11944
 legitimate: 11899
 fraud: 45
 testing: 33
 bust_out: 12
+```
