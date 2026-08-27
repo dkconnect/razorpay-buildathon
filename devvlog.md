@@ -237,3 +237,26 @@ FraudRingConfig(ring_id='ring_003', identity_count=7, phase1_duration_minutes=9,
 ```
 FraudRingConfig(ring_id='ring_004', identity_count=7, phase1_duration_minutes=14, phase1_transaction_count=43, phase2_gap_minutes=13, phase2_duration_minutes=11, phase2_transaction_count=20, phase1_min_amount=1.0, phase1_max_amount=50.0, phase2_min_amount=5000.0, phase2_max_amount=50000.0)
 ```
+
+### 27 Aug - 11 AM
+#### Multiple Fraud Scenarios
+```
+seed 0 → ring_000 → transactions
+seed 1 → ring_001 → transactions
+seed 2 → ring_002 → transactions
+```
+
+*Manual Check*
+```
+scenarios: 10
+transactions: [45, 138, 66, 106, 47, 108, 60, 111, 103, 83]
+total: 867
+```
+
+#### Mix Legitimacy and Fraud Traffic
+*check*
+total: 11944
+legitimate: 11899
+fraud: 45
+testing: 33
+bust_out: 12
