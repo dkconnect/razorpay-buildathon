@@ -260,3 +260,40 @@ legitimate: 11899
 fraud: 45
 testing: 33
 bust_out: 12
+
+*current line*
+```
+LEGITIMATE DAY + FRAUD RING --> MIXED STREAM --> known ground truth
+```
+### 27 Aug - 1 PM
+#### Ground Truth Validation
+
+I need one small data-integrity checkpoint so that wil guarantee that the fraud injector is not producing nonsense.
+
+```
+Every fraud transaction has is_fraud=True.
+Every fraud transaction has a valid phase.
+Testing transactions are actually low-value.
+Bust-out transactions are actually high-value.
+```
+## 27 Aug - Final Data
+*Day 2 dataset*
+```
+generated                                                                                               
+-----------------------                                                                                               
+total:     11944                                                                                                      
+legitimate: 11899                                                                                                     
+fraud:     45          
+testing:   33
+bust_out:  12
+seed:      42
+output:    data\generated\mixed_fraud.json
+```
+```
+loaded: 11944
+fraud: 45
+testing: 33
+bust_out: 12
+first: 2026-01-05 00:00:57.701006
+last: 2026-01-05 23:59:58.743260
+```
