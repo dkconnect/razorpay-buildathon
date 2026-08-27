@@ -171,3 +171,22 @@ Transaction B
  ├─ device: fraud_device_ring_001_3
  ├─ IP:     10.250.3.0/24
  └─ BIN:    4000003
+
+
+### 27 Aug - 7 AM
+#### Card Testing
+
+*many tiny payments in a short period, using the same coordinated identity pool*
+```
+Phase 1
+
+Duration:       configurable
+Transactions:   configurable
+Amount:         ₹1–₹50
+Identity pool:  fraud ring identities
+is_fraud:       True
+phase:          "testing"
+ring_id:        ring_001
+```
+
+```Phase 1 | ₹1–₹50 | many transactions``` --> ```Phase 2 | ₹5,000–₹50,000 | fewer transactions```
