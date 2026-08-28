@@ -359,15 +359,13 @@ For each time step and observation with hourly baseline mean and SD.
 * $S_0^+ = 0$ and $S_0^- = 0$ are the initial conditions.
 
 
-These are two fundamental architectural catches that separate a toy project from a winning risk engine.
+### 28 Aug - 10 AM
 
----
-
-### 1. The Fusion Function: Multiplicative Gate / Fuzzy Logic (Anti-Flash-Sale)
+#### 1. The Fusion Function: Multiplicative Gate 
 
 A naive linear combination ($\sum w_i S_i$) or maximum ($\max S_i$) fails the **Flash-Sale False-Positive Test** because a $5\times$ velocity spike produces a massive $S_v^+ \approx 1.0$, pushing a weighted sum into alert territory even when basket sizes are completely healthy.
 
-#### Mathematical Formulation for Fusion
+*Mathematical Formulation for Fusion*
 
 We decompose the temporal risk into two independent threat channels and take their safe bounded union:
 
@@ -390,12 +388,9 @@ $$\text{score}_{\text{testing}} = 1.0 \times 0.0 = \mathbf{0.0}$$
 $$\text{score}_{\text{testing}} = 1.0 \times 1.0 = \mathbf{1.0}$$
 
 
-
-
 2. **Decoupled Activation for Phase 2 (Bust-Out):**
 
 $$\text{score}_{\text{bust}} = \sigma\left(\frac{S_{\text{high}}^+}{h}\right)$$
-
 
 
 Bust-outs often occur with normal or moderate velocity, so $S_{\text{high}}^+$ does not require high transaction volume to assert risk.
@@ -406,10 +401,9 @@ Bust-outs often occur with normal or moderate velocity, so $S_{\text{high}}^+$ d
 $$\text{regime\_score} = 1 - (1 - \text{score}_{\text{testing}}) \times (1 - \text{score}_{\text{bust}}) \in [0, 1]$$
 
 
-
 ---
 
-### 2. Strict Baseline Source Guarantee (Preventing Data Leakage)
+#### 2. Strict Baseline Source Guarantee (Preventing Data Leakage)
 
 To guarantee that the baseline parameter profile $\mu_0(h), \sigma_0(h)$ is exclusively fitted on clean, unpolluted data:
 
@@ -419,12 +413,3 @@ Every dataset JSON carries a top-level `"scenario_type"` metadata field (`"norma
 
 2. **Hard Assertion in `BaselineCalibrator.fit()`:**
 Enforce strict metadata validation so fitting will throw a `ValueError` if executed on anything other than clean baseline data.
-
-
-
----
-
-### Implementation: Complete & Updated Step 4 Modules
-
-#### `detection/cusum.py` (Updated with strict baseline validation & sigmoid mapping)
-
