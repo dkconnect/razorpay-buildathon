@@ -30,7 +30,7 @@ class TemporalFeatureExtractor:
         self,
         window_minutes: float = 15.0,
         threshold_low: float = 50.0,
-        threshold_high: float = 5000.0,
+        threshold_high: float = 12000.0,
     ):
         self.window_seconds = window_minutes * 60.0
         self.window_minutes = window_minutes

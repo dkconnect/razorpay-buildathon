@@ -4,7 +4,7 @@ Baseline Calibration and Multi-Signal Online CUSUM Regime Detectors.
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import numpy as np
 
 from features.temporal import TemporalSnapshot
@@ -13,6 +13,7 @@ from features.temporal import TemporalSnapshot
 @dataclass
 class BaselineProfile:
     """Hourly expected values and standard deviations for temporal metrics."""
+    source_scenario: str
     hourly_velocity_mean: np.ndarray      # Shape: (24,)
     hourly_velocity_std: np.ndarray       # Shape: (24,)
     hourly_log_amt_mean: np.ndarray       # Shape: (24,)
@@ -25,14 +26,18 @@ class BaselineProfile:
 
 class BaselineCalibrator:
     """
-    Fits non-stationary diurnal baseline parameters using historical clean/normal traffic.
+    Fits non-stationary diurnal baseline parameters strictly from clean normal traffic.
     """
 
     @staticmethod
-    def fit(snapshots: List[TemporalSnapshot]) -> BaselineProfile:
-        """
-        Fits 24-hour profiles from a list of snapshots generated from normal training data.
-        """
+    def fit(snapshots: List[TemporalSnapshot], scenario_name: str = "normal_day") -> BaselineProfile:
+        # Strict enforcement against baseline contamination
+        if "normal" not in scenario_name.lower() or "fraud" in scenario_name.lower() or "flash" in scenario_name.lower():
+            raise ValueError(
+                f"Data contamination guard triggered! Baseline calibration can only run on clean normal traffic. "
+                f"Attempted to calibrate on: '{scenario_name}'"
+            )
+
         hours = np.array([int((s.timestamp // 3600) % 24) for s in snapshots])
         velocities = np.array([s.velocity_per_min for s in snapshots])
         log_amts = np.array([s.mean_log_amount for s in snapshots])
@@ -73,6 +78,7 @@ class BaselineCalibrator:
                 h_high_std[h] = 0.01
 
         return BaselineProfile(
+            source_scenario=scenario_name,
             hourly_velocity_mean=h_vel_mean,
             hourly_velocity_std=h_vel_std,
             hourly_log_amt_mean=h_log_mean,
@@ -86,7 +92,6 @@ class BaselineCalibrator:
 
 @dataclass
 class CUSUMState:
-    """Tracks state and changepoint flags across all three temporal signals."""
     timestamp: float
     s_velocity_pos: float
     s_amount_neg: float
@@ -100,41 +105,34 @@ class CUSUMState:
 
 
 class CUSUMDetector:
-    """
-    Multi-Signal Online CUSUM detector tracking:
-    1. Upward velocity drift (S_v^+)
-    2. Downward log-amount drift (S_a^-)
-    3. Upward high-value transaction rate (S_bust^+)
-    """
-
     def __init__(
         self,
         baseline: BaselineProfile,
         k_slack: float = 0.5,
         threshold_h: float = 5.0,
+        min_window_count: int = 50,
     ):
         self.baseline = baseline
         self.k = k_slack
         self.h = threshold_h
-
-        # Accumulator states
+        # high_val_ratio is a proportion estimated from the window's tx count.
+        # Below this sample size the proportion is too noisy to trust as
+        # evidence (nighttime/low-traffic windows can have n~30 vs n~165
+        # in the day) - the CUSUM simply holds rather than accumulating
+        # on an unreliable small-sample estimate.
+        self.min_window_count = min_window_count
         self.s_velocity: float = 0.0
         self.s_amount: float = 0.0
         self.s_high_val: float = 0.0
 
     def reset(self) -> None:
-        """Resets all accumulators to zero."""
         self.s_velocity = 0.0
         self.s_amount = 0.0
         self.s_high_val = 0.0
 
     def update(self, snapshot: TemporalSnapshot) -> CUSUMState:
-        """
-        Updates CUSUM accumulators with the latest sliding window snapshot.
-        """
         hour = int((snapshot.timestamp // 3600) % 24)
 
-        # 1. Standardize inputs against diurnal baselines
         z_vel = (
             snapshot.velocity_per_min - self.baseline.hourly_velocity_mean[hour]
         ) / self.baseline.hourly_velocity_std[hour]
@@ -147,31 +145,44 @@ class CUSUMDetector:
             snapshot.high_val_ratio - self.baseline.hourly_high_ratio_mean[hour]
         ) / self.baseline.hourly_high_ratio_std[hour]
 
-        # 2. Update CUSUM accumulators
-        # Upward velocity shift
         self.s_velocity = max(0.0, self.s_velocity + z_vel - self.k)
-
-        # Downward log amount shift (Negative drift indicates micro-testing)
         self.s_amount = max(0.0, self.s_amount - z_amt - self.k)
+        if snapshot.tx_count >= self.min_window_count:
+            self.s_high_val = max(0.0, self.s_high_val + z_high - self.k)
+        # else: hold s_high_val unchanged - window too small to trust the ratio
 
-        # Upward high-value breakout (Bust-out)
-        self.s_high_val = max(0.0, self.s_high_val + z_high - self.k)
-
-        # 3. Check threshold exceedance
         vel_alert = bool(self.s_velocity >= self.h)
         amt_alert = bool(self.s_amount >= self.h)
         high_alert = bool(self.s_high_val >= self.h)
 
-        # 4. Normalize accumulators to [0, 1] scores using sigmoid saturation
-        norm_vel = float(np.tanh(self.s_velocity / self.h))
-        norm_amt = float(np.tanh(self.s_amount / self.h))
-        norm_high = float(np.tanh(self.s_high_val / self.h))
+        # Capture magnitudes BEFORE reset, so a snapshot that just fired an
+        # alert still reports the score that caused it (not 0). Downstream
+        # regime_score fusion depends on this being non-zero at the moment
+        # of alarm.
+        s_velocity_report = self.s_velocity
+        s_amount_report = self.s_amount
+        s_high_val_report = self.s_high_val
+
+        norm_vel = float(np.tanh(s_velocity_report / self.h))
+        norm_amt = float(np.tanh(s_amount_report / self.h))
+        norm_high = float(np.tanh(s_high_val_report / self.h))
+
+        # Classical CUSUM reset-on-alarm: once a sum crosses h, the alarm is
+        # logged for THIS snapshot, then the sum resets to 0 so the detector
+        # can find the next changepoint instead of staying pinned above
+        # threshold indefinitely.
+        if vel_alert:
+            self.s_velocity = 0.0
+        if amt_alert:
+            self.s_amount = 0.0
+        if high_alert:
+            self.s_high_val = 0.0
 
         return CUSUMState(
             timestamp=snapshot.timestamp,
-            s_velocity_pos=self.s_velocity,
-            s_amount_neg=self.s_amount,
-            s_high_val_pos=self.s_high_val,
+            s_velocity_pos=s_velocity_report,
+            s_amount_neg=s_amount_report,
+            s_high_val_pos=s_high_val_report,
             velocity_alert=vel_alert,
             amount_alert=amt_alert,
             high_val_alert=high_alert,
