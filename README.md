@@ -6,8 +6,8 @@
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="BP_logo.png">
-  <img src="BP_logo.png" width="170" alt="BreakPoint"/>
+  <source media="(prefers-color-scheme: dark)" srcset="BP_Logo.png">
+  <img src="BP_Logo.png" width="170" alt="BreakPoint"/>
 </picture>
 
 # BreakPoint
