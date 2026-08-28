@@ -335,3 +335,96 @@ high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)
 - To run CUSUM effectively without false alarms, static global thresholds will be kinda eww.
 
 - I will calibrate an hourly baseline profile ```mu, sigma``` directly from clean/normal transaction windows.
+
+### 28 Aug : 9 AM
+#### Step 3: Multi-Signal Dual-Sided CUSUM Core 
+
+- Implementing the online CUSUM detector. 
+
+*Maths*
+
+For each time step and observation with hourly baseline mean and SD.
+
+1. **Standardized Score ($Z$):**
+   $$z_t = \frac{x_t - \mu_0(h)}{\sigma_0(h)}$$
+
+2. **One-Sided Positive CUSUM ($S^+$):** 
+   $$S_t^+ = \max\left(0,\, S_{t-1}^+ + z_t - k\right)$$
+
+3. **One-Sided Negative CUSUM ($S^-$):** 
+   $$S_t^- = \max\left(0,\, S_{t-1}^- - z_t - k\right)$$
+
+* $k$ is the reference allowance (typically $k = 0.5$).
+* $h_{\text{thresh}}$ is the decision threshold (typically $h = 5.0$).
+* $S_0^+ = 0$ and $S_0^- = 0$ are the initial conditions.
+
+
+These are two fundamental architectural catches that separate a toy project from a winning risk engine.
+
+---
+
+### 1. The Fusion Function: Multiplicative Gate / Fuzzy Logic (Anti-Flash-Sale)
+
+A naive linear combination ($\sum w_i S_i$) or maximum ($\max S_i$) fails the **Flash-Sale False-Positive Test** because a $5\times$ velocity spike produces a massive $S_v^+ \approx 1.0$, pushing a weighted sum into alert territory even when basket sizes are completely healthy.
+
+#### Mathematical Formulation for Fusion
+
+We decompose the temporal risk into two independent threat channels and take their safe bounded union:
+
+$$\text{Risk}_{\text{Phase 1 (Card Testing)}} = S_{\text{velocity\_norm}} \times S_{\text{amount\_neg\_norm}}$$
+
+$$\text{Risk}_{\text{Phase 2 (Bust-Out)}} = S_{\text{high\_val\_norm}}$$
+
+1. **Multiplicative Conjunction (Fuzzy-AND) for Phase 1:**
+
+$$\text{score}_{\text{testing}} = \sigma\left(\frac{S_v^+}{h}\right) \times \sigma\left(\frac{S_a^-}{h}\right)$$
+
+
+* **During Flash Sale:** $S_v^+ \gg h \implies \sigma \approx 1.0$, but $S_a^- = 0 \implies \sigma = 0.0$.
+
+$$\text{score}_{\text{testing}} = 1.0 \times 0.0 = \mathbf{0.0}$$
+
+
+* **During Card Testing:** $S_v^+ \gg h$ AND $S_a^- \gg h \implies \sigma(S_v^+) \approx 1.0 \text{ and } \sigma(S_a^-) \approx 1.0$.
+
+$$\text{score}_{\text{testing}} = 1.0 \times 1.0 = \mathbf{1.0}$$
+
+
+
+
+2. **Decoupled Activation for Phase 2 (Bust-Out):**
+
+$$\text{score}_{\text{bust}} = \sigma\left(\frac{S_{\text{high}}^+}{h}\right)$$
+
+
+
+Bust-outs often occur with normal or moderate velocity, so $S_{\text{high}}^+$ does not require high transaction volume to assert risk.
+
+
+3. **Combined Unified Regime Score:**
+
+$$\text{regime\_score} = 1 - (1 - \text{score}_{\text{testing}}) \times (1 - \text{score}_{\text{bust}}) \in [0, 1]$$
+
+
+
+---
+
+### 2. Strict Baseline Source Guarantee (Preventing Data Leakage)
+
+To guarantee that the baseline parameter profile $\mu_0(h), \sigma_0(h)$ is exclusively fitted on clean, unpolluted data:
+
+1. **Tag Metadata on Dataset Generation / Serialization:**
+Every dataset JSON carries a top-level `"scenario_type"` metadata field (`"normal_day"`, `"flash_sale"`, `"mixed_fraud"`).
+
+
+2. **Hard Assertion in `BaselineCalibrator.fit()`:**
+Enforce strict metadata validation so fitting will throw a `ValueError` if executed on anything other than clean baseline data.
+
+
+
+---
+
+### Implementation: Complete & Updated Step 4 Modules
+
+#### `detection/cusum.py` (Updated with strict baseline validation & sigmoid mapping)
+
