@@ -413,3 +413,9 @@ Every dataset JSON carries a top-level `"scenario_type"` metadata field (`"norma
 
 2. **Hard Assertion in `BaselineCalibrator.fit()`:**
 Enforce strict metadata validation so fitting will throw a `ValueError` if executed on anything other than clean baseline data.
+
+
+### 28 Aug - 9 PM
+#### Day 4 - Graph Builder & Feature Extraction 
+
+Building the heterogeneous transaction graph constructor and feature extractor.
