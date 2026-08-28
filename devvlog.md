@@ -327,3 +327,11 @@ high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)
 ```low_val_ratio: Ratio of transactions where amount≤$50 (card testing signature)  ```
 
 ```high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)  ```
+
+
+### 28 Aug : 7 AM
+#### Baseline Profiler & Diurnal Calibration 
+
+- To run CUSUM effectively without false alarms, static global thresholds will be kinda eww.
+
+- I will calibrate an hourly baseline profile ```mu, sigma``` directly from clean/normal transaction windows.
