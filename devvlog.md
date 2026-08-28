@@ -424,3 +424,24 @@ Building the heterogeneous transaction graph constructor and feature extractor.
 #### Community Detection & Graph Detector
 
 Building the detector layer. takes the transaction window, partitions connected transaction clusters using NetworkX's Louvain community detection, extracts per-cluster structural features and maps each cluster into an identified community structure.  
+
+### 29 Aug 
+#### Ring Scoring Model (ring_score $\in [0, 1]$)   
+
+- Build the calibrated scoring engine.
+- The ring_score maps multi-dimensional topological features into $[0, 1]$ using a non-linear sigmoid formulation based on:
+
+
+Device Reuse Ratio ($\ge 2.0$ transactions/device is suspicious)  
+
+IP Reuse Ratio ($\ge 2.0$ transactions/IP is suspicious)  
+
+BIN Concentration (HHI index $\to 1.0$ indicates focused card-testing across specific target BINs)
+
+Customer Dispersal with Shared Infrastructure  
+
+Cluster Size Scaling
+
+#### Cross-Phase Identity Linkage & End-to-End Validation  
+
+Implement the cross-phase linkage engine. 
