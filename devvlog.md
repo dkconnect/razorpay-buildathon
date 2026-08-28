@@ -261,6 +261,7 @@ legitimate: 11899
 fraud: 45
 testing: 33
 bust_out: 12
+```
 
 *current line*
 ```
@@ -307,8 +308,6 @@ to process an online stream of transaction events and maintain rolling statis ov
 ```
 
 The key signals:
-```
-velocity: tx count / t (minutes)
 
 ```
 ​```
@@ -321,3 +320,10 @@ low_val_ratio: Ratio of transactions where amount≤$50 (card testing signature)
 high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)  
 ```
 
+```velocity: tx count / t (minutes)```
+
+​```mean_amount & mean_log_amount: Tracks nominal vs. exponential deflection  ```
+
+```low_val_ratio: Ratio of transactions where amount≤$50 (card testing signature)  ```
+
+```high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)  ```
