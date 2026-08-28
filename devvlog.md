@@ -277,7 +277,7 @@ Every fraud transaction has a valid phase.
 Testing transactions are actually low-value.
 Bust-out transactions are actually high-value.
 ```
-## 27 Aug - Final Data
+### 27 Aug - Final Data
 *Day 2 dataset*
 ```
 generated                                                                                               
@@ -320,3 +320,4 @@ low_val_ratio: Ratio of transactions where amount≤$50 (card testing signature)
 ```
 high_val_ratio: Ratio of transactions where amount≥$5000 (bust-out signature)  
 ```
+
