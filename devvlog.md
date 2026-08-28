@@ -419,3 +419,8 @@ Enforce strict metadata validation so fitting will throw a `ValueError` if execu
 #### Day 4 - Graph Builder & Feature Extraction 
 
 Building the heterogeneous transaction graph constructor and feature extractor.
+
+### 28 Aug - 10 PM
+#### Community Detection & Graph Detector
+
+Building the detector layer. takes the transaction window, partitions connected transaction clusters using NetworkX's Louvain community detection, extracts per-cluster structural features and maps each cluster into an identified community structure.  
