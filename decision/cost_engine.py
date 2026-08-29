@@ -62,8 +62,13 @@ class CostSensitiveDecisionEngine:
         best_action = min(costs, key=costs.get)
 
         # Safety Guardrails:
-        # If risk is minimal (< 0.25) or exposure is zero, default to MONITOR
-        if p_risk < 0.25 and exposure < 100.0:
+        # If risk is minimal (< 0.25) OR exposure is negligible, default to
+        # MONITOR. NOTE: this must be OR, not AND - a legitimate flash sale
+        # naturally moves real money, so requiring exposure < 100 as well
+        # makes this guard unreachable for any realistically-sized window
+        # even when the fused risk score has already correctly assessed
+        # the situation as low-risk.
+        if p_risk < 0.25 or exposure < 100.0:
             best_action = "MONITOR"
         # If escalation is confirmed and ring_score >= 0.70 with substantial exposure, HOLD
         elif escalation_score >= 0.60 and ring_score >= 0.70 and exposure >= 500.0:

@@ -29,8 +29,21 @@ class RiskFusionEngine:
         e_score = float(np.clip(escalation_score, 0.0, 1.0))
 
         # Base weighted fusion
+        regime_component = self.w_regime * r_score
+
+        # A velocity spike alone is exactly what a legitimate flash sale
+        # looks like. If the graph layer has NOT confirmed a coordinated
+        # ring (g_score below the "strong ring" bar used elsewhere in this
+        # class, see cooccurrence_boost below), discount the raw velocity
+        # contribution rather than let it alone push overall risk into
+        # "moderate" territory. Without this, a pure organic traffic spike
+        # can cross the decision engine's HOLD threshold on velocity alone,
+        # even though the graph layer correctly identified it as low-ring.
+        if r_score >= 0.60 and g_score < 0.50:
+            regime_component *= 0.25
+
         base_fused = (
-            self.w_regime * r_score +
+            regime_component +
             self.w_ring * g_score +
             self.w_escalation * e_score
         )

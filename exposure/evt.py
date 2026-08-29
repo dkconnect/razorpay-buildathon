@@ -111,8 +111,14 @@ class TailExposureEstimator:
             amt = float(tx.get("amount", 0.0))
             if tx_id in implicated_set:
                 implicated_volume += amt
-                # Risk-weighted expected loss
-                p_fraud = max(ring_risk_score, 0.50)
+                # Risk-weighted expected loss: use the actual ring risk score
+                # as the fraud probability. No artificial floor - flooring
+                # this at a constant (e.g. 0.50) would manufacture exposure
+                # for windows the graph layer already correctly scored as
+                # low-risk (e.g. a flash sale's top community scoring 0.39,
+                # well below the ~0.70 fraud threshold), which then drives
+                # the cost engine to HOLD on legitimate traffic.
+                p_fraud = float(np.clip(ring_risk_score, 0.0, 1.0))
                 expected_fraud_exposure += p_fraud * amt
 
         return {
