@@ -466,6 +466,16 @@ Implement the cross-phase linkage engine.
 
 - Wire the entire pipeline from transaction stream $\to$ regime detection $\to$ graph community detection $\to$ risk fusion $\to$ exposure estimation $\to$ cost-sensitive decision + audit logging.
 
-### Tail & Expected Exposure Engine
+#### Tail & Expected Exposure Engine
 
 - Build the scientific exposure estimation module.
+
+#### Cost-Sensitive Decision Engine 
+
+- We will build the economic action layer. Instead of using hardcoded heuristic cutoffs, this module models the expected financial loss and friction under three strictly defense-only actions:  
+
+```
+MONITOR: Low risk or trivial exposure. No investigator intervention.  
+FLAG_FOR_REVIEW: Moderate risk. Queued for asynchronous review. 
+HOLD_FOR_REVIEW: High expected loss + strong evidence.
+```
