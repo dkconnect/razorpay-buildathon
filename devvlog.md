@@ -479,3 +479,8 @@ MONITOR: Low risk or trivial exposure. No investigator intervention.
 FLAG_FOR_REVIEW: Moderate risk. Queued for asynchronous review. 
 HOLD_FOR_REVIEW: High expected loss + strong evidence.
 ```
+
+### End-to-End Pipeline & Audit Trail 
+
+```
+- Will wire all the components together into a unified pipeline class (FraudSentinelPipeline) and connect main.py.
