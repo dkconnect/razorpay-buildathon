@@ -465,3 +465,7 @@ Implement the cross-phase linkage engine.
 #### **End-to-End Pipeline & Audit Trail**
 
 - Wire the entire pipeline from transaction stream $\to$ regime detection $\to$ graph community detection $\to$ risk fusion $\to$ exposure estimation $\to$ cost-sensitive decision + audit logging.
+
+### Tail & Expected Exposure Engine
+
+- Build the scientific exposure estimation module.
