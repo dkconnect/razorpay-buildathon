@@ -445,3 +445,23 @@ Cluster Size Scaling
 #### Cross-Phase Identity Linkage & End-to-End Validation  
 
 Implement the cross-phase linkage engine. 
+
+
+### **Day 5** 
+#### **Multi-Signal Risk Fusion Layer**
+
+- Combining independent temporal, graph, and escalation evidence into an interpretable, calibrated $\text{overall\_risk\_score} \in [0, 1]$.
+
+- also maintain clean audit trail outputs
+
+#### **Tail & Expected Exposure Engine**
+
+- Quantify extreme tail loss exposure and expected fraud volume using Peaks Over Threshold.
+
+#### **Cost-Sensitive Decision Engine**
+
+- Implementing an expected-cost optimization engine that maps risk and financial exposure into a human in the loop defensive action.
+
+#### **End-to-End Pipeline & Audit Trail**
+
+- Wire the entire pipeline from transaction stream $\to$ regime detection $\to$ graph community detection $\to$ risk fusion $\to$ exposure estimation $\to$ cost-sensitive decision + audit logging.
