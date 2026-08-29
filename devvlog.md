@@ -482,5 +482,19 @@ HOLD_FOR_REVIEW: High expected loss + strong evidence.
 
 ### End-to-End Pipeline & Audit Trail 
 
-```
 - Will wire all the components together into a unified pipeline class (FraudSentinelPipeline) and connect main.py.
+
+
+### Scenario-Level Dataset Splitting & Test Harness Setup 
+
+```
+- Prevent data leakage by ensuring entire scenario runs (and individual fraud rings) exist strictly in either dev (70%), val (15%), or heldout_test (15%).  
+- Feature/Label Segregation: Strip ground-truth columns (is_fraud, ring_id, phase) before feeding streams into detection engines.  
+- Diverse Attack Distributions: Generate multi-scenario test batches with varying ring parameters (different BIN concentrations, device reuse rates, velocity ratios, and phase gaps).  
+```
+
+*Ignore*
+
+### Audit Trail Persistence
+• Append-only JSONL logger, one record per pipeline decision
+• Schema mirrors sentinel_pipeline.py's existing output exactly (no reshaping) — timestamp, decision, risk components, exposure, reason codes
