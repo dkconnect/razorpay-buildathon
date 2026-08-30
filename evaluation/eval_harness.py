@@ -5,10 +5,6 @@ of day), replaying each scenario window-by-window in chronological order so
 Day 4's cross-phase escalation linkage gets the same live conditions it would
 in production. Records whether/when each ring was caught.
 
-This is the data-generation half of §7 of the project plan. Step 3 builds
-the detection-rate-vs-ring-size curve and latency numbers on top of this;
-Step 4 builds the ₹ P&L framing; Step 5 bundles both into a report.
-
 Reproducibility: every random draw in this file is seeded (the fraud config,
 the fraud ring's internal identity/amount sampling, and the injection start
 time all derive from the scenario's seed). The same seed list produces the
@@ -118,12 +114,19 @@ def _get_background(window_minutes: int):
     return _background_cache[window_minutes]
 
 
-def run_single_scenario(seed: int, window_minutes: int = 30) -> ScenarioResult:
+def run_single_scenario(
+    seed: int, window_minutes: int = 30, config_override=None
+) -> ScenarioResult:
     """
     Injects one randomized fraud ring into the standard background day,
     replays the merged stream through ONE FraudSentinelPipeline instance
     window-by-window in chronological order, and records whether/when the
     ring was caught.
+
+    config_override: if provided, use this FraudRingConfig instead of
+    generating one from `seed` via generate_random_fraud_config. Used by
+    run_stealth_volume_sweep to probe transaction-volume as an axis
+    independent of the seed-driven random config.
     """
     background, background_window_counts = _get_background(window_minutes)
 
@@ -135,7 +138,9 @@ def run_single_scenario(seed: int, window_minutes: int = 30) -> ScenarioResult:
     start_offset_minutes = rng.randint(60, 23 * 60)
     injected_start = DEFAULT_START_TIME + timedelta(minutes=start_offset_minutes)
 
-    config = generate_random_fraud_config(seed=seed, ring_id=f"eval_ring_{seed:04d}")
+    config = config_override or generate_random_fraud_config(
+        seed=seed, ring_id=f"eval_ring_{seed:04d}"
+    )
     fraud_txs_raw = generate_fraud_ring(config=config, start_time=injected_start, seed=seed)
     fraud_txs = [_tx_to_dict(t) for t in fraud_txs_raw]
 
@@ -248,6 +253,55 @@ def default_seed_range(n: int = 30, start: int = 1000) -> List[int]:
     Starts at 1000 to avoid colliding with the low seeds (0-5ish) already
     used by hand-authored fixtures elsewhere in the codebase."""
     return list(range(start, start + n))
+
+
+def run_stealth_volume_sweep(
+    volumes: List[int],
+    samples_per_volume: int = 5,
+    identity_count: int = 8,
+    window_minutes: int = 30,
+    seed_base: int = 9000,
+) -> Dict[int, List[ScenarioResult]]:
+    """
+    identity_count (ring size) turns out NOT to control detection difficulty
+    in this generator, because phase1_transaction_count is randomized
+    independently of it (see Day 6 Step 3 findings) - a 4-identity ring can
+    still produce 140+ test transactions, which is a loud, dense, easily
+    detected signal regardless of how few identities share it.
+
+    The axis that actually should control difficulty is transaction VOLUME:
+    a genuinely stealthy ring keeps its total transaction count low. This
+    sweep holds identity_count fixed and varies phase1_transaction_count
+    (and proportionally, phase2_transaction_count) down into a low range,
+    to find where detection actually starts to break down.
+    """
+    from config.fraud import FraudRingConfig
+
+    results_by_volume: Dict[int, List[ScenarioResult]] = {}
+
+    for volume in volumes:
+        # phase2 is always a smaller fraction of phase1 in the original
+        # random generator (roughly 1:5 to 1:7 ratio) - keep that shape.
+        phase2_count = max(2, volume // 6)
+        bucket_results = []
+        for i in range(samples_per_volume):
+            seed = seed_base + volume * 100 + i
+            config = FraudRingConfig(
+                ring_id=f"stealth_v{volume}_{i}",
+                identity_count=identity_count,
+                phase1_duration_minutes=max(5, min(20, volume // 3)),
+                phase1_transaction_count=volume,
+                phase2_gap_minutes=5,
+                phase2_duration_minutes=8,
+                phase2_transaction_count=phase2_count,
+            )
+            result = run_single_scenario(
+                seed=seed, window_minutes=window_minutes, config_override=config
+            )
+            bucket_results.append(result)
+        results_by_volume[volume] = bucket_results
+
+    return results_by_volume
 
 
 if __name__ == "__main__":
