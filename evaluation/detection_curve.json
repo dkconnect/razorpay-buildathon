@@ -1,0 +1,193 @@
+{
+  "n_scenarios": 60,
+  "overall_detection_rate": {
+    "n": 60,
+    "detected": 60,
+    "detection_rate": 1.0
+  },
+  "detection_by_ring_size": [
+    {
+      "ring_size": 4,
+      "n": 10,
+      "detected": 10,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 10,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 5,
+      "n": 8,
+      "detected": 8,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 8,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 6,
+      "n": 3,
+      "detected": 3,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 3,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 7,
+      "n": 3,
+      "detected": 3,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 3,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 8,
+      "n": 3,
+      "detected": 3,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 3,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 9,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 10,
+      "n": 5,
+      "detected": 5,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 5,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 11,
+      "n": 8,
+      "detected": 8,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 8,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 12,
+      "n": 5,
+      "detected": 5,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 5,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 13,
+      "n": 3,
+      "detected": 3,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 3,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "ring_size": 14,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    }
+  ],
+  "latency_stats": {
+    "n_detected": 60,
+    "mean_minutes": 5,
+    "median_minutes": 0.0,
+    "p90_minutes": 30,
+    "max_minutes": 30,
+    "caught_before_bustout": 60,
+    "caught_late": 0,
+    "missed_entirely": 0
+  },
+  "detection_by_phase1_volume": [
+    {
+      "phase1_volume": 3,
+      "n": 6,
+      "detected": 5,
+      "detection_rate": 0.8333,
+      "caught_before_bustout": 5,
+      "caught_late": 0,
+      "missed": 1
+    },
+    {
+      "phase1_volume": 5,
+      "n": 6,
+      "detected": 4,
+      "detection_rate": 0.6667,
+      "caught_before_bustout": 4,
+      "caught_late": 0,
+      "missed": 2
+    },
+    {
+      "phase1_volume": 8,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "phase1_volume": 12,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "phase1_volume": 20,
+      "n": 6,
+      "detected": 5,
+      "detection_rate": 0.8333,
+      "caught_before_bustout": 5,
+      "caught_late": 0,
+      "missed": 1
+    },
+    {
+      "phase1_volume": 30,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "phase1_volume": 50,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    },
+    {
+      "phase1_volume": 80,
+      "n": 6,
+      "detected": 6,
+      "detection_rate": 1.0,
+      "caught_before_bustout": 6,
+      "caught_late": 0,
+      "missed": 0
+    }
+  ]
+}

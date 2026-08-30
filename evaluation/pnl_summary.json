@@ -1,0 +1,35 @@
+{
+  "n_scenarios": 30,
+  "pnl": {
+    "fraud_saved": 15038435.27,
+    "false_positive_cost": 32038.93,
+    "fraud_missed": 0.0,
+    "net_impact": 15006396.34
+  },
+  "outcome": {
+    "true_positives": 30,
+    "false_positives": 274,
+    "false_negatives": 0,
+    "true_negatives": 1109,
+    "fraud_exposure_caught": 15038435.27,
+    "fraud_exposure_missed": 0.0
+  },
+  "false_positive_reports": [
+    {
+      "scenario_name": "normal_day",
+      "total_windows": 48,
+      "flagged_windows": 9,
+      "false_positive_rate": 0.1875,
+      "total_false_positive_cost": 13916.2,
+      "total_legitimate_volume": 29871628.85
+    },
+    {
+      "scenario_name": "flash_sale",
+      "total_windows": 48,
+      "flagged_windows": 11,
+      "false_positive_rate": 0.2292,
+      "total_false_positive_cost": 18122.73,
+      "total_legitimate_volume": 44777959.27
+    }
+  ]
+}
