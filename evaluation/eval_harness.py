@@ -1,9 +1,15 @@
 """
+Evaluation Harness — Step 2, Day 6
+
 Runs the full FraudSentinelPipeline against many independently randomized
 fraud-ring scenarios (varying ring size, phase durations, and injection time
 of day), replaying each scenario window-by-window in chronological order so
 Day 4's cross-phase escalation linkage gets the same live conditions it would
 in production. Records whether/when each ring was caught.
+
+This is the data-generation half of §7 of the project plan. Step 3 builds
+the detection-rate-vs-ring-size curve and latency numbers on top of this;
+Step 4 builds the ₹ P&L framing; Step 5 bundles both into a report.
 
 Reproducibility: every random draw in this file is seeded (the fraud config,
 the fraud ring's internal identity/amount sampling, and the injection start
@@ -93,6 +99,15 @@ class ScenarioResult:
     windows_flagged_among_ring_activity: int
     max_overall_risk_score_on_ring_windows: float
     decisions_on_ring_windows: List[str] = field(default_factory=list)
+    # ₹ amounts, for the P&L report. Defaulted so existing hand-built
+    # ScenarioResult instances (e.g. in tests) don't need updating.
+    phase1_amount_total: float = 0.0
+    phase2_amount_total: float = 0.0
+    # False positives on the BACKGROUND traffic within this same scenario
+    # (windows that don't touch the ring at all) - feeds classify_evaluation's
+    # legitimate_alerts/total_legitimate for a per-scenario confusion matrix.
+    background_windows_flagged: int = 0
+    background_windows_total: int = 0
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -166,6 +181,9 @@ def run_single_scenario(
     decisions_on_ring_windows: List[str] = []
     ring_start_ts = min(t["timestamp"] for t in fraud_txs)
 
+    background_windows_flagged = 0
+    background_windows_total = 0
+
     for window_idx in sorted(windows.keys()):
         window_txs = windows[window_idx]
         expected_rate = background_window_counts.get(window_idx, 1) / max(1, window_minutes)
@@ -191,6 +209,12 @@ def run_single_scenario(
                 ring_activity_flagged += 1
                 if first_detection_window_index is None:
                     first_detection_window_index = window_idx
+        else:
+            # Pure background window (no ring transactions at all) - any
+            # flag here is a false positive, independent of ring detection.
+            background_windows_total += 1
+            if decision in FLAGGED_DECISIONS:
+                background_windows_flagged += 1
 
     detected = first_detection_window_index is not None
     time_to_detection: Optional[float] = None
@@ -239,6 +263,10 @@ def run_single_scenario(
         windows_flagged_among_ring_activity=ring_activity_flagged,
         max_overall_risk_score_on_ring_windows=round(max_risk_on_ring_windows, 4),
         decisions_on_ring_windows=decisions_on_ring_windows,
+        phase1_amount_total=round(sum(t["amount"] for t in fraud_txs if t.get("phase") != "bust_out"), 2),
+        phase2_amount_total=round(sum(t["amount"] for t in phase2_txs), 2),
+        background_windows_flagged=background_windows_flagged,
+        background_windows_total=background_windows_total,
     )
 
 
