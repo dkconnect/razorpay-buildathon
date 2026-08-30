@@ -9,9 +9,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 
-from dashboard.replay import load_scenario, replay_scenario
+# Import get_audit_logger from dashboard.replay
+from dashboard.replay import load_scenario, replay_scenario, get_audit_logger
 from dashboard.panels.timeline import render_timeline_panel
 from dashboard.panels.graph_view import render_graph_panel
+from dashboard.panels.decision import render_decision_panel, render_audit_panel
 
 st.set_page_config(page_title="Breakpoint — Preview", layout="wide")
 
@@ -54,9 +56,10 @@ if "frames" in st.session_state:
     with col1:
         render_graph_panel(frame)
     with col2:
-        st.markdown("#### WINDOW DETAIL")
-        st.write(f"**{frame.window_label}**")
-        st.write(f"Decision: `{frame.pipeline_result['decision']}`")
-        st.json(frame.pipeline_result.get("risk_assessment", {}))
+        render_decision_panel(frame)
+        
+        # Instantiate logger and render audit panel
+        audit_logger = get_audit_logger()
+        render_audit_panel(frame, audit_logger)
 else:
     st.info("Pick a scenario and click 'Load & Replay' to begin.")
