@@ -9,7 +9,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 
-# Import get_audit_logger from dashboard.replay
 from dashboard.replay import load_scenario, replay_scenario, get_audit_logger
 from dashboard.panels.timeline import render_timeline_panel
 from dashboard.panels.graph_view import render_graph_panel
@@ -26,7 +25,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("BREAKPOINT — Preview (Steps 1-3)")
+st.title("BREAKPOINT — Preview (Steps 1-4)")
 
 scenario = st.selectbox(
     "Scenario", ["normal_day", "flash_sale", "mixed_fraud", "random"]
@@ -52,14 +51,16 @@ if "frames" in st.session_state:
     st.session_state["idx"] = idx
 
     frame = frames[idx]
+    st.write(f"**{frame.window_label}**")
+
     col1, col2 = st.columns([1, 1])
     with col1:
         render_graph_panel(frame)
     with col2:
         render_decision_panel(frame)
-        
-        # Instantiate logger and render audit panel
-        audit_logger = get_audit_logger()
-        render_audit_panel(frame, audit_logger)
+
+    st.markdown("---")
+    audit_logger = get_audit_logger()
+    render_audit_panel(audit_logger)
 else:
     st.info("Pick a scenario and click 'Load & Replay' to begin.")
