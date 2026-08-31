@@ -2,15 +2,52 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="logo/BP_Logo.png">
-  <img src="logo/BP_Logo.png" width="1000" alt="BreakPoint"/>
+  <img src="logo/BP_Logo.png" width="850" alt="BreakPoint — AI Risk Sentinel"/>
 </picture>
 
-# BreakPoint
-**Regime-aware fraud detection for merchants — built for the Razorpay Buildathon, Track 2: AI Risk Manager**
+# BREAKPOINT
 
+### *Regime-Aware Statistical & Graph-Driven Real-Time Fraud Sentinel*
+**Built for Razorpay AI Buildathon — Track 02: AI Risk Manager**
+
+<p align="center">
+  <a href="https://breakpoint-razorpay.streamlit.app/">
+    <img src="https://img.shields.io/badge/_Live_Demo-Streamlit_App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo" />
+  </a>
+  <a href="https://youtu.be/your-video-link">
+    <img src="https://img.shields.io/badge/_Pitch_Video-5_Min_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Pitch Video" />
+  </a>
+  <a href="https://github.com/dkconnect/razorpay-buildathon">
+    <img src="https://img.shields.io/badge/_Architecture-Deep_Dive-4B8BBE?style=for-the-badge&logo=diagramsdotnet&logoColor=white" alt="Architecture" />
+  </a>
+</p>
+
+<!-- Badges Row -->
+[![CI Status](https://img.shields.io/github/actions/workflow/status/dkconnect/razorpay-buildathon/ci.yml?branch=main&style=flat-square&logo=github-actions&logoColor=white)](https://github.com/dkconnect/razorpay-buildathon/actions)
+[![Tests Passing](https://img.shields.io/badge/Tests-50%2F50%20Passing-brightgreen?style=flat-square&logo=pytest&logoColor=white)](tests/)
+[![Python Version](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/UI-Streamlit_Dark_Theme-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+
+<br/>
+
+
+**Breakpoint · Dibyanshu Kumar · IIT Madras · August 2026**
+
+---
 </div>
 
 Breakpoint doesn't stop at "flag the transaction." It detects **regime shifts** in a merchant's transaction stream using changepoint-detection methods borrowed from quantitative finance, explains *why* using graph-based ring detection, sizes the **₹ exposure** using extreme value theory, and recommends a bounded, human-reviewable action — with every decision logged to a tamper-evident audit trail.
+
+### The Core Breakthrough
+> Traditional payment fraud engines fail during **high-concurrency regime shifts** (e.g., flash-sale traffic spikes vs. distributed, multi-account card-testing rings) because static thresholding cannot distinguish legitimate velocity bursts from adversarial attacks, while Gaussian loss models miscalculate heavy-tailed losses.
+
+**Breakpoint** solves this by uniting:
+
+1. **Page's CUSUM**: Statistical temporal change-point detection with adaptive baseline drift tracking ($S_n$).
+2. **Bipartite Subgraph Analysis**: Topology-aware collusive cycle and fraud ring extraction via NetworkX.
+3. **Extreme Value Theory (EVT/GPD)**: Heavy-tailed exposure pricing for Value-at-Risk ($VaR$) and Expected Shortfall ($ES$).
+4. **Asymmetric Financial PnL Optimizer**: Explicitly balancing False Positive margin/churn cost against False Negative chargeback penalties.
 
 ---
 
