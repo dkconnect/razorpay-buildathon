@@ -46,6 +46,16 @@ Breakpoint doesn't stop at "flag the transaction." It detects **regime shifts** 
 83–100% detection across low-volume scenarios
 ```
 
+### The Core Breakthrough
+> Static threshold-based systems can struggle during high-concurrency regime shifts, where legitimate velocity bursts and coordinated fraud can look superficially similar.
+
+**Breakpoint** solves this by uniting:
+
+1. **Page's CUSUM**: Statistical temporal change-point detection with adaptive baseline drift tracking ($S_n$).
+2. **Bipartite Subgraph Analysis**: Topology-aware collusive cycle and fraud ring extraction via NetworkX.
+3. **Extreme Value Theory (EVT/GPD)**: Heavy-tailed exposure pricing for Value-at-Risk ($VaR$) and Expected Shortfall ($ES$).
+4. **Asymmetric Financial PnL Optimizer**: Explicitly balancing False Positive margin/churn cost against False Negative chargeback penalties.
+
 ## Judge Quickstart
 
 If you only have 5 minutes:
@@ -70,16 +80,6 @@ If you only have 5 minutes:
 **Risk layer:** EVT estimates tail exposure → ₹ VaR / CVaR  
 **Decision layer:** expected-cost comparison → bounded action  
 **Audit layer:** every decision → hash-chained record
-
-### The Core Breakthrough
-> Static threshold-based systems can struggle during high-concurrency regime shifts, where legitimate velocity bursts and coordinated fraud can look superficially similar.
-
-**Breakpoint** solves this by uniting:
-
-1. **Page's CUSUM**: Statistical temporal change-point detection with adaptive baseline drift tracking ($S_n$).
-2. **Bipartite Subgraph Analysis**: Topology-aware collusive cycle and fraud ring extraction via NetworkX.
-3. **Extreme Value Theory (EVT/GPD)**: Heavy-tailed exposure pricing for Value-at-Risk ($VaR$) and Expected Shortfall ($ES$).
-4. **Asymmetric Financial PnL Optimizer**: Explicitly balancing False Positive margin/churn cost against False Negative chargeback penalties.
 
 ---
 
