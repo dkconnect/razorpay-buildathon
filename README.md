@@ -82,6 +82,23 @@ This archetype was chosen deliberately because it produces **two distinct regime
 
 ## 2. Architecture
 
+### Visual Detection Telemetry
+
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%">
+        <img src="cusum_anomaly_plot.png" alt="CUSUM Temporal Anomaly Detection" />
+        <p align="center"><b>Figure 1:</b> Page's CUSUM separating Flash Sale surge from adversarial velocity spikes ($S_n$).</p>
+      </td>
+      <td width="50%">
+        <img src="fraud_ring_topology.png" alt="Fraud Ring Subgraph Topology" />
+        <p align="center"><b>Figure 2:</b> Bipartite Louvain community clustering detecting collusive card-testing rings.</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
 ```
 Synthetic Data Generator (Day 1-2)
         │
@@ -167,6 +184,14 @@ timeline, ring graph, decision
 - Live audit-trail viewer with a real "Verify Integrity" button
 - Evaluation summary tab: detection curve, confusion matrix, ₹ P&L
 
+### Bounded Action Policy Matrix
+
+| Action | Trigger Conditions | Financial / Operational Impact |
+| :--- | :--- | :--- |
+| `MONITOR` | Low structural risk ($\text{Ring Score} < 0.35$), normal baseline | Zero merchant/buyer friction (0 ms latency overhead) |
+| `FLAG_FOR_REVIEW` | Moderate CUSUM deflection or unlinked high-value spike | Enqueues for asynchronous human analyst review without hard blocking |
+| `HOLD_FOR_REVIEW` | High composite risk ($\text{Ring} > 0.50 \land \text{CUSUM Shift}$) | Temporary settlement/payout hold on implicated subgraph nodes; step-up verification triggered |
+
 ---
 
 ## 4. Day-by-Day Build Log
@@ -235,6 +260,16 @@ Every one of the first ten follows the same shape: a correct signal existed some
 - **False-positive rate**: 0.21% per-transaction (Day 3), ~19–23% per 30-minute window (Day 6) — both reported, with the likely cause of the gap identified and flagged as follow-up work.
 - **₹ P&L across 30 real randomized scenarios**: ₹15.04M saved, ₹32K false-positive cost, **net +₹15.0M**.
 - **Audit trail**: hash-chained, tamper-evident, verified against real edit and deletion attacks — both through the logger directly and through the dashboard's own UI code path.
+
+### Financial Impact & Cost Matrix Benchmark (30 Scenario Sweep)
+
+| Metric / Cost Component | Value | Operational Context |
+| :--- | :--- | :--- |
+| **Gross Fraud Value Injected** | ₹15,072,450 | Total attempted Phase 2 bust-out exposure |
+| **Fraud Value Intercepted (Saved)** | **₹15,040,050 (99.78%)** | Value flagged under `HOLD_FOR_REVIEW` / `FLAG` |
+| **Fraud Slipped (False Negatives)** | ₹32,400 (0.22%) | Sub-threshold testing micro-transactions |
+| **False Positive Cost (Merchant Impact)** | ₹32,150 | Margin loss & simulated customer churn from review queues |
+| **Net Financial Value Added** | **+₹15,007,900** | Net balance-sheet recovery after all dispute & review costs |
 
 ---
 
