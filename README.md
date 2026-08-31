@@ -24,11 +24,10 @@
 
 <!-- Badges Row -->
 [![CI Status](https://img.shields.io/github/actions/workflow/status/dkconnect/razorpay-buildathon/ci.yml?branch=main&style=flat-square&logo=github-actions&logoColor=white)](https://github.com/dkconnect/razorpay-buildathon/actions)
-[![Tests Passing](https://img.shields.io/badge/Tests-50%2F50%20Passing-brightgreen?style=flat-square&logo=pytest&logoColor=white)](tests/)
+[![Tests Passing](https://img.shields.io/badge/Tests-223%2F223%20Passing-brightgreen?style=flat-square&logo=pytest&logoColor=white)](tests/)
 [![Python Version](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit_Dark_Theme-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-
 <br/>
 
 
@@ -39,8 +38,41 @@
 
 Breakpoint doesn't stop at "flag the transaction." It detects **regime shifts** in a merchant's transaction stream using changepoint-detection methods borrowed from quantitative finance, explains *why* using graph-based ring detection, sizes the **₹ exposure** using extreme value theory, and recommends a bounded, human-reviewable action — with every decision logged to a tamper-evident audit trail.
 
+```
+223 tests passing
+99.78% simulated fraud exposure intercepted
+₹15.04M fraud exposure identified/saved
+₹32.15K simulated FP friction
+83–100% detection across low-volume scenarios
+```
+
+## Judge Quickstart
+
+If you only have 5 minutes:
+
+1. **Launch the Dashboard**:
+   - **Local Terminal**: `streamlit run dashboard/app.py`
+   - **Live Cloud**: [![Live Demo](https://img.shields.io/badge/_Visit_Live_Dashboard-breakpoint--razorpay.streamlit.app-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://breakpoint-razorpay.streamlit.app/)
+2. Select `mixed_fraud`.
+3. Click `Load & Replay`.
+4. Watch Phase 1 → changepoint → ring formation → Phase 2.
+5. Inspect the implicated graph.
+6. Inspect VaR/CVaR and the HOLD decision.
+7. Open EVALUATION.
+8. Compare fraud detection against the flash-sale baseline.
+9. Open the audit trail and run Verify Integrity.
+
+### What the demo is proving
+
+**Flash sale:** high legitimate volume → `MONITOR`  
+**Phase 1:** low-value coordinated testing → changepoint + ring structure  
+**Phase 2:** same identities + value breakout → `HOLD_FOR_REVIEW`  
+**Risk layer:** EVT estimates tail exposure → ₹ VaR / CVaR  
+**Decision layer:** expected-cost comparison → bounded action  
+**Audit layer:** every decision → hash-chained record
+
 ### The Core Breakthrough
-> Traditional payment fraud engines fail during **high-concurrency regime shifts** (e.g., flash-sale traffic spikes vs. distributed, multi-account card-testing rings) because static thresholding cannot distinguish legitimate velocity bursts from adversarial attacks, while Gaussian loss models miscalculate heavy-tailed losses.
+> Static threshold-based systems can struggle during high-concurrency regime shifts, where legitimate velocity bursts and coordinated fraud can look superficially similar.
 
 **Breakpoint** solves this by uniting:
 
@@ -290,38 +322,51 @@ Every one of the first ten follows the same shape: a correct signal existed some
 
 ## 7. Project Structure
 
-```
-├── config/                  Fraud & scenario configuration dataclasses
-├── data/
-│   ├── generator/            Poisson arrivals, amounts, fraud config generator
-│   ├── generated/            normal_day.json, flash_sale.json, mixed_fraud.json
-│   └── schema.py              Transaction dataclass
-├── scenarios/                normal_day, flash_sale, fraud_ring, mixed_fraud builders
-├── features/
-│   ├── temporal.py            Rolling window feature extraction
-│   └── graph_features.py      Transaction → entity graph construction
-├── detection/
-│   ├── cusum.py                Multi-signal CUSUM + baseline calibration
-│   ├── regime.py               Regime classification & scoring
-│   ├── graph_detector.py       Louvain ring detection, ring scoring, PhaseLinker
-│   ├── fusion.py                Risk fusion engine
-│   └── sentinel_pipeline.py     The integrated end-to-end pipeline
-├── exposure/evt.py           EVT/GPD tail fitting, VaR/CVaR
-├── decision/cost_engine.py   Cost-sensitive MONITOR/FLAG/HOLD decision logic
-├── audit/logger.py           Hash-chained, tamper-evident audit trail
-├── evaluation/
-│   ├── eval_harness.py         Randomized scenario sweep engine
-│   ├── metrics.py               Detection-rate curves, latency stats
-│   ├── pnl_report.py            ₹ P&L calculation + real data gathering
-│   ├── generate_report.py       Aggregate EVAL_REPORT.md generator
-│   └── EVAL_REPORT.md           The generated evaluation report
-├── dashboard/
-│   ├── replay.py                Scenario replay backend
-│   ├── theme.py                 Terminal theme CSS injection
-│   ├── app.py                   The final assembled Streamlit app
-│   └── panels/                  timeline.py, graph_view.py, decision.py, eval_summary.py
-├── logo/                     Brand assets
-└── tests/                    223 tests across every module above
+```mermaid
+mindmap
+  root((📂 breakpoint/))
+    ⚙️ config
+      fraud.py
+      scenario.py
+    📥 data
+      generator
+        arrivals.py
+        amounts.py
+        fraud_ring.py
+      generated
+        normal_day.json
+        flash_sale.json
+        mixed_fraud.json
+      schema.py
+    📈 features
+      temporal.py
+      graph_features.py
+    🛡️ detection
+      cusum.py
+      graph_detector.py
+      regime.py
+      sentinel_pipeline.py
+    📊 exposure
+      evt.py
+    ⚖️ decision
+      cost_engine.py
+    🔒 audit
+      logger.py
+    🧪 evaluation
+      eval_harness.py
+      metrics.py
+      pnl_report.py
+      EVAL_REPORT.md
+    🖥️ dashboard
+      app.py
+      replay.py
+      theme.py
+      panels
+        timeline.py
+        graph_view.py
+        decision.py
+        eval_summary.py
+    🚦 tests 223 passing
 ```
 
 ---
