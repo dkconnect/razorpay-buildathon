@@ -99,50 +99,65 @@ This archetype was chosen deliberately because it produces **two distinct regime
   </table>
 </div>
 
-```
-Synthetic Data Generator (Day 1-2)
-        │
-        ▼
-Transaction Stream
-        │
-        ▼
-STAGE 1 — Changepoint Detection (Day 3, wired in properly on Day 6)
-  Multi-signal CUSUM: velocity↑, amount↓, high-value tail breakout
-  Hour-aware calibrated baseline
-  → regime_score, onset timestamp, reason codes (flagged window)
-        │   
-        ▼
-STAGE 2 — Graph-Based Ring Detection (Day 4)
-  Transaction → entity graph, Louvain community detection
-  Ring scoring (device/IP reuse, BIN concentration, identity mismatch)
-  PhaseLinker: connects Phase 1 clusters to Phase 2 escalation
-  → ring_score, implicated subgraph
-        │
-        ▼
-STAGE 3 — Risk Fusion + Exposure Sizing (Day 5)
-  Weighted fusion of regime/ring/escalation scores (with organic-traffic
-  dampening so a flash sale can't dominate the score on velocity alone)
-  EVT/GPD tail fit → VaR₉₅, CVaR₉₅ (₹ exposure)
-        │
-        ▼
-STAGE 4 — Cost-Sensitive Decision (Day 5)
-  MONITOR / FLAG_FOR_REVIEW / HOLD_FOR_REVIEW
-  Never auto-blocks — always a bounded, human-reviewable action
-        │
-        ▼
-Tamper-Evident Audit Trail (Day 6)
-  Hash-chained, append-only log of every decision
-        │
-        ▼
-Evaluation Harness + P&L Report (Day 6)          
-  Randomized scenario sweeps → detection            
-  curves, ₹ P&L, honest false-positive cost    
-  panel, audit viewer, eval summary      
-        │
-        ▼                        
-Live Dashboard (Day 7)          
-Terminal-styled Streamlit app:                  
-timeline, ring graph, decision                          
+```mermaid
+flowchart TD
+    subgraph S0[" 0. DATA GENERATION & INGESTION (Days 1–2) "]
+        GEN["Synthetic Data Generator<br>• Inhomogeneous Poisson arrivals & diurnal seasonality<br>• 2-Phase Fraud Ring (Testing → Bust-out)"]
+        STREAM["Live Transaction Stream<br>(t_i, User, Merchant, Amount, IP/Device)"]
+        GEN --> STREAM
+    end
+
+    subgraph S1[" STAGE 1: CHANGEPOINT DETECTION (Day 3 & Day 6) "]
+        STREAM --> CUSUM["Multi-Signal CUSUM Detector<br>• Velocity Surge ↑ | Amount Deflection ↓ | Tail Breakout<br>• Hour-aware calibrated baseline with reset-on-alarm"]
+        CUSUM --> S1_OUT["Output: regime_score, onset_time, reason_codes"]
+    end
+
+    subgraph S2[" STAGE 2: GRAPH-BASED RING DETECTION (Day 4) "]
+        S1_OUT --> GRAPH["Topological Entity Graph<br>• Louvain community clustering<br>• Ring scoring (Device/IP reuse, BIN HHI concentration)<br>• PhaseLinker: correlates Phase 1 testing to Phase 2 bust-out"]
+        GRAPH --> S2_OUT["Output: ring_score, implicated_subgraph"]
+    end
+
+    subgraph S3[" STAGE 3: RISK FUSION & EXPOSURE SIZING (Day 5) "]
+        S2_OUT --> FUSION["Risk Fusion & EVT Sizing<br>• Organic volume dampening (Flash sale protection)<br>• Extreme Value Theory (GPD tail fitting)"]
+        FUSION --> S3_OUT["Output: Composite Risk Score, VaR₉₅, CVaR₉₅ (₹ Exposure)"]
+    end
+
+    subgraph S4[" STAGE 4: COST-SENSITIVE DECISION ENGINE (Day 5) "]
+        S3_OUT --> DECISION{"Expected Cost Optimizer<br>Min E[Cost]"}
+        DECISION -->|Low Risk| D1["MONITOR<br>(Zero Friction)"]
+        DECISION -->|Ambiguous Spike| D2["FLAG_FOR_REVIEW<br>(Async Queue)"]
+        DECISION -->|High Structural Risk| D3["HOLD_FOR_REVIEW<br>(Bounded Settlement Hold)"]
+    end
+
+    subgraph S5[" OBSERVABILITY, EVALUATION & REPLAY (Days 6–7) "]
+        D1 & D2 & D3 --> AUDIT["Tamper-Evident Audit Trail (Day 6)<br>• Hash-chained append-only JSONL ledger"]
+        AUDIT --> EVAL["Evaluation Harness & P&L (Day 6)<br>• Sweep curves, ₹15M+ recovery, FP cost tracking"]
+        EVAL --> DASH["Live Streamlit Dashboard (Day 7)<br>• Terminal Bloomberg theme, timeline, live subgraph, replay"]
+    end
+
+    %% Node Styling
+    style S0 fill:#11111b,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4
+    style S1 fill:#181825,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
+    style S2 fill:#181825,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4
+    style S3 fill:#181825,stroke:#fab387,stroke-width:2px,color:#cdd6f4
+    style S4 fill:#181825,stroke:#f38ba8,stroke-width:2px,color:#cdd6f4
+    style S5 fill:#11111b,stroke:#cba6f7,stroke-width:2px,color:#cdd6f4
+
+    style GEN fill:#1e1e2e,stroke:#89b4fa,color:#cdd6f4
+    style STREAM fill:#1e1e2e,stroke:#89b4fa,color:#cdd6f4
+    style CUSUM fill:#1e1e2e,stroke:#a6e3a1,color:#cdd6f4
+    style S1_OUT fill:#313244,stroke:#a6e3a1,stroke-dasharray: 5 5,color:#cdd6f4
+    style GRAPH fill:#1e1e2e,stroke:#f9e2af,color:#cdd6f4
+    style S2_OUT fill:#313244,stroke:#f9e2af,stroke-dasharray: 5 5,color:#cdd6f4
+    style FUSION fill:#1e1e2e,stroke:#fab387,color:#cdd6f4
+    style S3_OUT fill:#313244,stroke:#fab387,stroke-dasharray: 5 5,color:#cdd6f4
+    style DECISION fill:#1e1e2e,stroke:#f38ba8,color:#cdd6f4
+    style D1 fill:#313244,stroke:#a6e3a1,color:#a6e3a1
+    style D2 fill:#313244,stroke:#f9e2af,color:#f9e2af
+    style D3 fill:#313244,stroke:#f38ba8,color:#f38ba8
+    style AUDIT fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
+    style EVAL fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
+    style DASH fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
 ```
 
 
