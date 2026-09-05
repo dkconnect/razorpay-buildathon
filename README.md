@@ -10,28 +10,28 @@
 ### *Regime-Aware Statistical & Graph-Driven Real-Time Fraud Sentinel*
 **Built for Razorpay AI Buildathon — Track 02: AI Risk Manager**
 
+<!--
+  BEFORE RECORDING: verify the Live Demo link below actually loads.
+  If breakpoint-razorpay.streamlit.app is not deployed and working RIGHT NOW,
+  delete this badge block. A dead link in a demo recording is worse than no link.
+  Add a Pitch Video badge back in only once you have the real YouTube URL —
+  never ship a placeholder link.
+-->
 <p align="center">
   <a href="https://breakpoint-razorpay.streamlit.app/">
     <img src="https://img.shields.io/badge/_Live_Demo-Streamlit_App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo" />
-  </a>
-  <a href="https://youtu.be/your-video-link">
-    <img src="https://img.shields.io/badge/_Pitch_Video-5_Min_Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Pitch Video" />
   </a>
   <a href="https://github.com/dkconnect/razorpay-buildathon">
     <img src="https://img.shields.io/badge/_Architecture-Deep_Dive-4B8BBE?style=for-the-badge&logo=diagramsdotnet&logoColor=white" alt="Architecture" />
   </a>
 </p>
 
-<!-- Badges Row -->
-[![CI Status](https://img.shields.io/github/actions/workflow/status/dkconnect/razorpay-buildathon/ci.yml?branch=main&style=flat-square&logo=github-actions&logoColor=white)](https://github.com/dkconnect/razorpay-buildathon/actions)
 [![Tests Passing](https://img.shields.io/badge/Tests-223%2F223%20Passing-brightgreen?style=flat-square&logo=pytest&logoColor=white)](tests/)
 [![Python Version](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit_Dark_Theme-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-<br/>
 
-
-**Breakpoint · Dibyanshu Kumar · IIT Madras · August 2026**
+**Breakpoint · Dibyanshu Kumar · August 2026**
 
 ---
 </div>
@@ -40,46 +40,85 @@ Breakpoint doesn't stop at "flag the transaction." It detects **regime shifts** 
 
 ```
 223 tests passing
-99.78% simulated fraud exposure intercepted
-₹15.04M fraud exposure identified/saved
-₹32.15K simulated FP friction
-83–100% detection across low-volume scenarios
+30/30 fraud rings caught in the ₹-tracked evaluation sweep, 0 missed
+₹15.04M fraud exposure caught · ₹32.04K false-positive cost · net +₹15.01M
+83–100% detection across low-to-high transaction-volume scenarios
 ```
 
-### The Core Breakthrough
-> Static threshold-based systems can struggle during high-concurrency regime shifts, where legitimate velocity bursts and coordinated fraud can look superficially similar.
+## Why Breakpoint?
 
-**Breakpoint** solves this by uniting:
+Fraud does not always arrive as an obviously fraudulent transaction.
 
-1. **Page's CUSUM**: Statistical temporal change-point detection with adaptive baseline drift tracking ($S_n$).
-2. **Bipartite Subgraph Analysis**: Topology-aware collusive cycle and fraud ring extraction via NetworkX.
-3. **Extreme Value Theory (EVT/GPD)**: Heavy-tailed exposure pricing for Value-at-Risk ($VaR$) and Expected Shortfall ($ES$).
-4. **Asymmetric Financial PnL Optimizer**: Explicitly balancing False Positive margin/churn cost against False Negative chargeback penalties.
+A merchant can experience a sudden increase in transaction volume because of:
+- a legitimate flash sale,
+- a campaign,
+- a product launch,
+- a payday spike,
+- or an actual coordinated attack.
+
+A detector that reacts only to absolute thresholds can confuse these situations.
+
+**Breakpoint treats fraud as a changing risk regime rather than a collection of isolated transactions.**
+
+Instead of asking only:
+
+> **"Is this transaction suspicious?"**
+
+Breakpoint asks:
+
+> **"Has the merchant's transaction stream entered a structurally different regime, is that regime connected to a coordinated entity cluster, how large is the potential financial exposure, and what is the least-cost bounded action?"**
+
+That produces four outputs a risk team can actually act on:
+
+| Question | Breakpoint answer |
+|---|---|
+| **Has behavior changed?** | Statistical regime / changepoint signal |
+| **Is the change structurally suspicious?** | Graph-based entity/ring evidence |
+| **How bad could it become?** | Tail-risk exposure / VaR / CVaR |
+| **What should we do?** | Cost-sensitive bounded action |
+
+**The goal is not maximum blocking. The goal is maximum risk reduction with controlled friction.**
+
+### The core idea
+
+Static threshold-based systems can struggle during high-concurrency regime shifts, where legitimate velocity bursts and coordinated fraud can look superficially similar. Breakpoint addresses this by uniting:
+
+1. **CUSUM changepoint detection** — statistical temporal regime-shift detection with an hour-aware, calibrated baseline and adaptive drift tracking.
+2. **Bipartite graph analysis** — topology-aware ring extraction via Louvain community detection (NetworkX).
+3. **Extreme Value Theory (EVT/GPD)** — heavy-tailed exposure pricing for Value-at-Risk and Expected Shortfall.
+4. **Cost-sensitive decision engine** — explicitly weighing false-positive friction cost against fraud-exposure cost, per window, per decision.
+
+### A note on approach
+
+This project deliberately does not lean on a large multi-agent LLM stack, live third-party API orchestration, or infrastructure theater. The AI Risk Manager track asks for **honest metrics, including false-positive cost** — so the effort here went into making the *statistics correct* (a real, calibrated CUSUM detector, not a threshold guess), the *graph evidence real* (validated against actual generated rings, not just unit tests), and the *evaluation reproducible* (every number in this document is generated by a script in this repo, not asserted). Ten real bugs were found and fixed over the build — each one logged below, not smoothed over. If that's a less flashy story than a multi-service agent architecture, it's the one that was fully verified end to end.
+
+---
 
 ## Judge Quickstart
 
 If you only have 5 minutes:
 
-1. **Launch the Dashboard**:
-   - **Local Terminal**: `streamlit run dashboard/app.py`
-   - **Live Cloud**: [![Live Demo](https://img.shields.io/badge/_Visit_Live_Dashboard-breakpoint--razorpay.streamlit.app-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://breakpoint-razorpay.streamlit.app/)
+1. **Launch the dashboard:**
+   ```bash
+   streamlit run dashboard/app.py
+   ```
 2. Select `mixed_fraud`.
-3. Click `Load & Replay`.
+3. Click **Load & Replay**.
 4. Watch Phase 1 → changepoint → ring formation → Phase 2.
 5. Inspect the implicated graph.
-6. Inspect VaR/CVaR and the HOLD decision.
-7. Open EVALUATION.
+6. Inspect VaR/CVaR and the `HOLD_FOR_REVIEW` decision.
+7. Open the **EVALUATION** tab.
 8. Compare fraud detection against the flash-sale baseline.
-9. Open the audit trail and run Verify Integrity.
+9. Open the audit trail and click **Verify Integrity**.
 
 ### What the demo is proving
 
-**Flash sale:** high legitimate volume → `MONITOR`  
-**Phase 1:** low-value coordinated testing → changepoint + ring structure  
-**Phase 2:** same identities + value breakout → `HOLD_FOR_REVIEW`  
-**Risk layer:** EVT estimates tail exposure → ₹ VaR / CVaR  
-**Decision layer:** expected-cost comparison → bounded action  
-**Audit layer:** every decision → hash-chained record
+**Flash sale:** high legitimate volume → `MONITOR`
+**Phase 1:** low-value coordinated testing → changepoint + ring structure
+**Phase 2:** same identities + value breakout → `HOLD_FOR_REVIEW`
+**Risk layer:** EVT estimates tail exposure → ₹ VaR / CVaR
+**Decision layer:** expected-cost comparison → bounded action
+**Audit layer:** every decision → hash-chained record, independently verifiable
 
 ---
 
@@ -108,7 +147,24 @@ If you only have 5 minutes:
 
 This archetype was chosen deliberately because it produces **two distinct regime shifts** (a count-driven one, then a value-driven one) — a genuinely harder and more honest test than a single synthetic spike, and it gives the graph layer a real job: proving Phase 1 and Phase 2 are the same ring, not two coincidences.
 
-**What makes this different from a standard fraud classifier:** most fraud-detection projects stop at a binary "flagged: yes/no." Breakpoint instead answers a risk-desk question — *"how bad could this get if we don't act"* — using techniques that are common in quantitative finance (changepoint detection for regime shifts, EVT/CVaR for tail-risk sizing) and almost never applied to merchant fraud. That combination — not any single piece — is the actual differentiator.
+**What makes Breakpoint different from a standard fraud classifier:**
+
+Breakpoint is intentionally designed as a **decision system**, not a standalone fraud classifier.
+
+### 1. Temporal intelligence before classification
+The system first establishes what "normal" looks like for the merchant and detects statistically meaningful deviations from that baseline. High volume is not inherently fraud — a legitimate flash sale should not automatically produce the same response as a coordinated attack.
+
+### 2. Structure before severity
+A large transaction can be suspicious without being part of a coordinated attack. Breakpoint combines temporal evidence with **entity-level topology**: `User → Device → IP → Card/BIN → Transaction`. Shared infrastructure and concentrated identity relationships provide structural evidence that isolated transaction scoring cannot.
+
+### 3. Detection is not the same as risk
+Two alerts can have the same anomaly score but radically different financial consequences. Breakpoint estimates the **tail of the exposure distribution** using EVT/GPD and reports VaR, CVaR/Expected Shortfall, estimated exposure, and expected decision cost — closer to a risk desk's question ("what is our downside if this continues?") than a bare anomaly score.
+
+### 4. Every alert has an operational consequence
+The system does not default to blocking. It chooses between `MONITOR → FLAG_FOR_REVIEW → HOLD_FOR_REVIEW` according to expected financial cost and structural risk — risk-sensitive and human-reviewable, not an opaque automated blocker.
+
+### 5. The system is designed to be falsifiable
+Breakpoint deliberately evaluates itself against a difficult negative case: can it distinguish adversarial behavior from a legitimate high-volume regime shift? The flash-sale scenario exists specifically to test this. A system that detects every spike is easy to build. A system that detects the attack *without* treating every legitimate spike as fraud is the harder problem — and the one actually asked for.
 
 ---
 
@@ -121,77 +177,65 @@ This archetype was chosen deliberately because it produces **two distinct regime
     <tr>
       <td width="50%">
         <img src="cusum_anomaly_plot.png" alt="CUSUM Temporal Anomaly Detection" />
-        <p align="center"><b>Figure 1:</b> Page's CUSUM separating Flash Sale surge from adversarial velocity spikes ($S_n$).</p>
+        <p align="center"><b>Figure 1:</b> CUSUM-derived regime score over a full day of <code>mixed_fraud.json</code>. Red dashed lines mark every window the temporal layer flagged as a genuine regime shift.</p>
       </td>
       <td width="50%">
         <img src="fraud_ring_topology.png" alt="Fraud Ring Subgraph Topology" />
-        <p align="center"><b>Figure 2:</b> Bipartite Louvain community clustering detecting collusive card-testing rings.</p>
+        <p align="center"><b>Figure 2:</b> The actual highest-scoring implicated subgraph (ring_score 0.78) from a real replay — transactions fanning into shared device/IP/BIN nodes.</p>
       </td>
     </tr>
   </table>
 </div>
 
+*Both figures above are generated directly from real project code and data (`dashboard/replay.py` + `dashboard/panels/timeline.py` / `graph_view.py`), not mockups.*
+
 ```mermaid
 flowchart TD
-    subgraph S0[" 0. DATA GENERATION & INGESTION (Days 1–2) "]
-        GEN["Synthetic Data Generator<br>• Inhomogeneous Poisson arrivals & diurnal seasonality<br>• 2-Phase Fraud Ring (Testing → Bust-out)"]
-        STREAM["Live Transaction Stream<br>(t_i, User, Merchant, Amount, IP/Device)"]
+    subgraph S0[" 0. DATA GENERATION AND INGESTION - Days 1-2 "]
+        GEN["Synthetic Data Generator<br>Inhomogeneous Poisson arrivals and diurnal seasonality<br>2-Phase Fraud Ring: Testing to Bust-out"]
+        STREAM["Live Transaction Stream<br>timestamp, user, merchant, amount, ip, device"]
         GEN --> STREAM
     end
 
-    subgraph S1[" STAGE 1: CHANGEPOINT DETECTION (Day 3 & Day 6) "]
-        STREAM --> CUSUM["Multi-Signal CUSUM Detector<br>• Velocity Surge ↑ | Amount Deflection ↓ | Tail Breakout<br>• Hour-aware calibrated baseline with reset-on-alarm"]
+    subgraph S1[" STAGE 1: CHANGEPOINT DETECTION - Day 3, wired into pipeline Day 6 "]
+        STREAM --> CUSUM["Multi-Signal CUSUM Detector<br>Velocity surge up, amount deflection down, tail breakout<br>Hour-aware calibrated baseline with reset-on-alarm"]
         CUSUM --> S1_OUT["Output: regime_score, onset_time, reason_codes"]
     end
 
-    subgraph S2[" STAGE 2: GRAPH-BASED RING DETECTION (Day 4) "]
-        S1_OUT --> GRAPH["Topological Entity Graph<br>• Louvain community clustering<br>• Ring scoring (Device/IP reuse, BIN HHI concentration)<br>• PhaseLinker: correlates Phase 1 testing to Phase 2 bust-out"]
+    subgraph S2[" STAGE 2: GRAPH-BASED RING DETECTION - Day 4 "]
+        S1_OUT --> GRAPH["Topological Entity Graph<br>Louvain community clustering<br>Ring scoring: device/IP reuse, BIN HHI concentration<br>PhaseLinker: correlates Phase 1 to Phase 2"]
         GRAPH --> S2_OUT["Output: ring_score, implicated_subgraph"]
     end
 
-    subgraph S3[" STAGE 3: RISK FUSION & EXPOSURE SIZING (Day 5) "]
-        S2_OUT --> FUSION["Risk Fusion & EVT Sizing<br>• Organic volume dampening (Flash sale protection)<br>• Extreme Value Theory (GPD tail fitting)"]
-        FUSION --> S3_OUT["Output: Composite Risk Score, VaR₉₅, CVaR₉₅ (₹ Exposure)"]
+    subgraph S3[" STAGE 3: RISK FUSION AND EXPOSURE SIZING - Day 5 "]
+        S2_OUT --> FUSION["Risk Fusion and EVT Sizing<br>Organic-volume dampening for flash-sale protection<br>Extreme Value Theory GPD tail fitting"]
+        FUSION --> S3_OUT["Output: composite risk score, VaR95, CVaR95"]
     end
 
-    subgraph S4[" STAGE 4: COST-SENSITIVE DECISION ENGINE (Day 5) "]
-        S3_OUT --> DECISION{"Expected Cost Optimizer<br>Min E[Cost]"}
-        DECISION -->|Low Risk| D1["MONITOR<br>(Zero Friction)"]
-        DECISION -->|Ambiguous Spike| D2["FLAG_FOR_REVIEW<br>(Async Queue)"]
-        DECISION -->|High Structural Risk| D3["HOLD_FOR_REVIEW<br>(Bounded Settlement Hold)"]
+    subgraph S4[" STAGE 4: COST-SENSITIVE DECISION ENGINE - Day 5 "]
+        S3_OUT --> DECISION{"Expected-Cost Optimizer<br>minimize E of cost"}
+        DECISION -->|Low risk or negligible exposure| D1["MONITOR - zero friction"]
+        DECISION -->|Ambiguous - cost-minimized choice| D2["FLAG_FOR_REVIEW - async queue"]
+        DECISION -->|Escalation 0.60+, ring 0.70+, exposure 500+| D3["HOLD_FOR_REVIEW - bounded hold"]
     end
 
-    subgraph S5[" OBSERVABILITY, EVALUATION & REPLAY (Days 6–7) "]
-        D1 & D2 & D3 --> AUDIT["Tamper-Evident Audit Trail (Day 6)<br>• Hash-chained append-only JSONL ledger"]
-        AUDIT --> EVAL["Evaluation Harness & P&L (Day 6)<br>• Sweep curves, ₹15M+ recovery, FP cost tracking"]
-        EVAL --> DASH["Live Streamlit Dashboard (Day 7)<br>• Terminal Bloomberg theme, timeline, live subgraph, replay"]
+    subgraph S5[" OBSERVABILITY, EVALUATION AND REPLAY - Days 6-7 "]
+        D1 --> AUDIT["Tamper-Evident Audit Trail - Day 6<br>Hash-chained, append-only JSONL ledger"]
+        D2 --> AUDIT
+        D3 --> AUDIT
+        AUDIT --> EVAL["Evaluation Harness and P&L - Day 6<br>Sweep curves, rupee P&L, honest FP-cost tracking"]
+        EVAL --> DASH["Live Streamlit Dashboard - Day 7<br>Terminal theme, timeline, live subgraph, replay"]
     end
 
-    %% Node Styling
     style S0 fill:#11111b,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4
     style S1 fill:#181825,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
     style S2 fill:#181825,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4
     style S3 fill:#181825,stroke:#fab387,stroke-width:2px,color:#cdd6f4
     style S4 fill:#181825,stroke:#f38ba8,stroke-width:2px,color:#cdd6f4
     style S5 fill:#11111b,stroke:#cba6f7,stroke-width:2px,color:#cdd6f4
-
-    style GEN fill:#1e1e2e,stroke:#89b4fa,color:#cdd6f4
-    style STREAM fill:#1e1e2e,stroke:#89b4fa,color:#cdd6f4
-    style CUSUM fill:#1e1e2e,stroke:#a6e3a1,color:#cdd6f4
-    style S1_OUT fill:#313244,stroke:#a6e3a1,stroke-dasharray: 5 5,color:#cdd6f4
-    style GRAPH fill:#1e1e2e,stroke:#f9e2af,color:#cdd6f4
-    style S2_OUT fill:#313244,stroke:#f9e2af,stroke-dasharray: 5 5,color:#cdd6f4
-    style FUSION fill:#1e1e2e,stroke:#fab387,color:#cdd6f4
-    style S3_OUT fill:#313244,stroke:#fab387,stroke-dasharray: 5 5,color:#cdd6f4
-    style DECISION fill:#1e1e2e,stroke:#f38ba8,color:#cdd6f4
-    style D1 fill:#313244,stroke:#a6e3a1,color:#a6e3a1
-    style D2 fill:#313244,stroke:#f9e2af,color:#f9e2af
-    style D3 fill:#313244,stroke:#f38ba8,color:#f38ba8
-    style AUDIT fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
-    style EVAL fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
-    style DASH fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
 ```
 
+*(Diagram thresholds — 0.60 / 0.70 / ₹500 for the HOLD guardrail, and a separate MONITOR guardrail when risk < 0.25 or exposure < ₹100 — are read directly from `decision/cost_engine.py`, not approximated.)*
 
 ---
 
@@ -220,24 +264,25 @@ flowchart TD
 - Randomized, reproducible evaluation harness (seed-driven, fully deterministic)
 - Detection-rate curves by ring size *and* by transaction volume (the axis that actually matters)
 - Honest ₹ P&L report: fraud saved, false-positive cost, fraud missed, net impact — computed from the pipeline's own real decision costs, not a second invented formula
-- Aggregate `EVAL_REPORT.md` generator bundling every number into one reviewable document
+- Aggregate `EVAL_REPORT.md` generator bundling every number into one reviewable, regeneratable document
 
 **Live dashboard**
-- Terminal/Bloomberg-styled Streamlit app (black background, cyan accents, monospace throughout)
+- Terminal-styled Streamlit app (black background, cyan accents, monospace throughout)
 - Scenario selector (normal day / flash sale / mixed fraud / freshly randomized ring) with step-by-step and auto-play replay
 - Live timeline panel: transaction count, mean amount, regime score, changepoint markers
 - Live ring-graph panel: the actual implicated subgraph for any selected window
 - Decision panel: risk score, VaR/CVaR, cost breakdown, reason codes
 - Live audit-trail viewer with a real "Verify Integrity" button
 - Evaluation summary tab: detection curve, confusion matrix, ₹ P&L
+- End-to-end tested with Streamlit's official headless `AppTest` framework — not just individual panels in isolation
 
-### Bounded Action Policy Matrix
+### Bounded action policy (exact thresholds, from `decision/cost_engine.py`)
 
-| Action | Trigger Conditions | Financial / Operational Impact |
+| Action | Trigger | Impact |
 | :--- | :--- | :--- |
-| `MONITOR` | Low structural risk ($\text{Ring Score} < 0.35$), normal baseline | Zero merchant/buyer friction (0 ms latency overhead) |
-| `FLAG_FOR_REVIEW` | Moderate CUSUM deflection or unlinked high-value spike | Enqueues for asynchronous human analyst review without hard blocking |
-| `HOLD_FOR_REVIEW` | High composite risk ($\text{Ring} > 0.50 \land \text{CUSUM Shift}$) | Temporary settlement/payout hold on implicated subgraph nodes; step-up verification triggered |
+| `MONITOR` | `overall_risk_score < 0.25` **or** `exposure < ₹100` | Zero friction |
+| `HOLD_FOR_REVIEW` | `escalation_score ≥ 0.60` **and** `ring_score ≥ 0.70` **and** `exposure ≥ ₹500` | Bounded settlement hold, human reviewable |
+| `FLAG_FOR_REVIEW` | Neither guardrail fires — cost-minimization picks the cheapest expected action among the three | Async human review queue |
 
 ---
 
@@ -268,13 +313,13 @@ Six checkpoints:
 - **Aggregate report + cross-cutting validation** — `EVAL_REPORT.md`, reproducibility checks, audit-log integrity at scale, P&L internal consistency. **178 tests.**
 
 ### Day 7 — Live dashboard
-Six steps, terminal/Bloomberg-styled throughout:
+Six steps, terminal-styled throughout:
 - **Replay backend** — reuses the eval harness's exact windowing logic so the dashboard shows what the eval numbers measure, not a parallel path.
 - **Timeline panel** — count/amount/regime_score over the day, changepoints marked.
 - **Ring graph panel** — the real implicated subgraph, built directly from the pipeline's own graph-intelligence output.
 - **Decision panel** — VaR/CVaR, cost breakdown, reason codes, and a live audit-integrity check button (tested against a genuine tamper attempt through the actual UI code path, not just the logger in isolation).
 - **Eval summary panel** — detection curve, confusion matrix, ₹ P&L, read from cache (fast) with an opt-in regenerate button (honest about the ~2-3 minute cost).
-- **Final assembly** — terminal theme, scenario selector, step/auto-play controls, and Streamlit's official headless `AppTest` framework used to genuinely run the app end-to-end (not just test panels in isolation). This caught a real methodology trap: `st.tabs` runs both tabs' code every rerun regardless of which is visible, so button indices aren't in visual order — the app itself was correct throughout. **223 tests.**
+- **Final assembly** — terminal theme, scenario selector, step/auto-play controls, and Streamlit's official headless `AppTest` framework used to genuinely run the app end-to-end. This caught a real methodology trap: `st.tabs` runs both tabs' code every rerun regardless of which is visible, so button indices aren't in visual order — the app itself was correct throughout. **223 tests.**
 
 ---
 
@@ -293,7 +338,7 @@ Six steps, terminal/Bloomberg-styled throughout:
 | 9 | `detection/sentinel_pipeline.py` | ISO timestamp parsing via `.timestamp()` — timezone-fragile | Read hour/minute/second directly from parsed datetime |
 | 10 | `evaluation/eval_harness.py` | Detection latency via raw datetime subtraction could go negative | Measured in whole windows since ring onset instead |
 | 11 | `dashboard/*.py` | `use_container_width` deprecated across every Plotly/button call | Replaced with `width="stretch"` project-wide |
-| 12 | Test methodology (not app code) | `AppTest` button-index assumption broke under `st.tabs` (both tabs execute every run) | Select buttons by label, not index |
+| 12 | Test methodology | `AppTest` button-index assumption broke under `st.tabs` (both tabs execute every run) | Select buttons by label, not index |
 
 Every one of the first ten follows the same shape: a correct signal existed somewhere in the system, and something downstream silently ignored, overrode, or misreported it — worth remembering as a debugging pattern for this codebase going forward.
 
@@ -305,68 +350,111 @@ Every one of the first ten follows the same shape: a correct signal existed some
 - **Detection rate by transaction volume** (the axis that actually controls difficulty): 83–100% down to as few as 3–5 testing transactions, essentially certain at 8+.
 - **Detection rate by ring size**: flat 100% across 4–14 identities — an honestly-explained finding (transaction volume is randomized independently of ring size), not a hidden non-result.
 - **False-positive rate**: 0.21% per-transaction (Day 3), ~19–23% per 30-minute window (Day 6) — both reported, with the likely cause of the gap identified and flagged as follow-up work.
-- **₹ P&L across 30 real randomized scenarios**: ₹15.04M saved, ₹32K false-positive cost, **net +₹15.0M**.
 - **Audit trail**: hash-chained, tamper-evident, verified against real edit and deletion attacks — both through the logger directly and through the dashboard's own UI code path.
 
-### Financial Impact & Cost Matrix Benchmark (30 Scenario Sweep)
+### Financial impact — 30-scenario randomized evaluation sweep
 
-| Metric / Cost Component | Value | Operational Context |
+| Metric | Value | Context |
 | :--- | :--- | :--- |
-| **Gross Fraud Value Injected** | ₹15,072,450 | Total attempted Phase 2 bust-out exposure |
-| **Fraud Value Intercepted (Saved)** | **₹15,040,050 (99.78%)** | Value flagged under `HOLD_FOR_REVIEW` / `FLAG` |
-| **Fraud Slipped (False Negatives)** | ₹32,400 (0.22%) | Sub-threshold testing micro-transactions |
-| **False Positive Cost (Merchant Impact)** | ₹32,150 | Margin loss & simulated customer churn from review queues |
-| **Net Financial Value Added** | **+₹15,007,900** | Net balance-sheet recovery after all dispute & review costs |
+| **Fraud exposure caught** | ₹15,038,435.27 (30/30 rings, 100%) | Total attempted Phase 2 bust-out exposure |
+| **Fraud exposure missed** | ₹0.00 | Nothing slipped through in this sweep |
+| **False-positive cost** | ₹32,038.93 | Across normal_day + flash_sale, both 100% legitimate traffic |
+| **Net impact** | **+₹15,006,396.34** | Net position after all review/friction costs |
+
+*Every number above is generated by `evaluation/pnl_report.py` from real, seeded scenario replays — not hand-picked. Reproduce with:*
+```bash
+python -m evaluation.generate_report --regenerate
+```
+*Source file: `evaluation/pnl_summary.json`.*
+
+### Baseline comparison
+
+Breakpoint is evaluated against a deliberately simple velocity/threshold-style baseline to test the central design hypothesis:
+
+> **Does adding regime + structural + financial context improve risk decisions during legitimate volume spikes and coordinated fraud?**
+
+| Scenario | Naive threshold baseline | Breakpoint |
+|---|---|---|
+| Normal traffic | Monitors within threshold | `MONITOR` |
+| Flash-sale velocity spike | Vulnerable to velocity-based false escalation | Organic-volume dampening → `MONITOR` |
+| Coordinated testing | Limited temporal context, no entity linkage | CUSUM + graph evidence |
+| Bust-out escalation | Transaction-level severity only | Phase linkage + EVT exposure sizing |
+| High-risk cluster | Binary alert | Cost-sensitive bounded action |
+
+The comparison is intentionally about **decision quality**, not raw anomaly count.
 
 ---
 
 ## 7. Project Structure
 
+**Decision flow**
 ```mermaid
-mindmap
-  root((📂 breakpoint/))
-    ⚙️ config
-      fraud.py
-      scenario.py
-    📥 data
-      generator
-        arrivals.py
-        amounts.py
-        fraud_ring.py
-      generated
-        normal_day.json
-        flash_sale.json
-        mixed_fraud.json
-      schema.py
-    📈 features
-      temporal.py
-      graph_features.py
-    🛡️ detection
-      cusum.py
-      graph_detector.py
-      regime.py
-      sentinel_pipeline.py
-    📊 exposure
-      evt.py
-    ⚖️ decision
-      cost_engine.py
-    🔒 audit
-      logger.py
-    🧪 evaluation
-      eval_harness.py
-      metrics.py
-      pnl_report.py
-      EVAL_REPORT.md
-    🖥️ dashboard
-      app.py
-      replay.py
-      theme.py
-      panels
-        timeline.py
-        graph_view.py
-        decision.py
-        eval_summary.py
-    🚦 tests 223 passing
+flowchart TD
+    TX["TRANSACTION STREAM"] --> S1
+
+    S1["<b>TEMPORAL BASELINE</b><br>Hour-aware CUSUM"]
+    S1 -->|"<i>Did the regime change?</i>"| S2
+
+    S2["<b>ENTITY GRAPH</b><br>User / Device / IP<br>Card / BIN links"]
+    S2 -->|"<i>Is it structurally coordinated?</i>"| S3
+
+    S3["<b>TAIL RISK / EVT</b><br>VaR / CVaR / Rupee Exposure"]
+    S3 -->|"<i>How bad could it be?</i>"| S4
+
+    S4["<b>COST-SENSITIVE DECISION ENGINE</b>"]
+
+    S4 --> D1["<b>MONITOR</b><br><small>Zero / Low Friction</small>"]
+    S4 --> D2["<b>FLAG</b><br><small>Human Review</small>"]
+    S4 --> D3["<b>HOLD</b><br><small>Bounded Action</small>"]
+
+    D1 --> AUDIT["<b>HASH-CHAINED AUDIT TRAIL</b>"]
+    D2 --> AUDIT
+    D3 --> AUDIT
+
+    style TX fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4
+    style S1 fill:#181825,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
+    style S2 fill:#181825,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4
+    style S3 fill:#181825,stroke:#fab387,stroke-width:2px,color:#cdd6f4
+    style S4 fill:#181825,stroke:#f38ba8,stroke-width:2px,color:#cdd6f4
+    style D1 fill:#1e1e2e,stroke:#a6e3a1,color:#a6e3a1
+    style D2 fill:#1e1e2e,stroke:#f9e2af,color:#f9e2af
+    style D3 fill:#1e1e2e,stroke:#f38ba8,color:#f38ba8
+    style AUDIT fill:#1e1e2e,stroke:#cba6f7,stroke-width:2px,color:#cdd6f4
+```
+
+**Repository layout**
+```
+├── config/                  Fraud & scenario configuration dataclasses
+├── data/
+│   ├── generator/            Poisson arrivals, amounts, fraud config generator
+│   ├── generated/            normal_day.json, flash_sale.json, mixed_fraud.json
+│   └── schema.py              Transaction dataclass
+├── scenarios/                normal_day, flash_sale, fraud_ring, mixed_fraud builders
+├── features/
+│   ├── temporal.py            Rolling window feature extraction
+│   └── graph_features.py      Transaction → entity graph construction
+├── detection/
+│   ├── cusum.py                Multi-signal CUSUM + baseline calibration
+│   ├── regime.py               Regime classification & scoring
+│   ├── graph_detector.py       Louvain ring detection, ring scoring, PhaseLinker
+│   ├── fusion.py                Risk fusion engine
+│   └── sentinel_pipeline.py     The integrated end-to-end pipeline
+├── exposure/evt.py           EVT/GPD tail fitting, VaR/CVaR
+├── decision/cost_engine.py   Cost-sensitive MONITOR/FLAG/HOLD decision logic
+├── audit/logger.py           Hash-chained, tamper-evident audit trail
+├── evaluation/
+│   ├── eval_harness.py         Randomized scenario sweep engine
+│   ├── metrics.py               Detection-rate curves, latency stats
+│   ├── pnl_report.py            ₹ P&L calculation + real data gathering
+│   ├── generate_report.py       Aggregate EVAL_REPORT.md generator
+│   └── EVAL_REPORT.md           The generated evaluation report
+├── dashboard/
+│   ├── replay.py                Scenario replay backend
+│   ├── theme.py                 Terminal theme CSS injection
+│   ├── app.py                   The final assembled Streamlit app
+│   └── panels/                  timeline.py, graph_view.py, decision.py, eval_summary.py
+├── logo/                     Brand assets
+└── tests/                    223 tests across every module above
 ```
 
 ---
